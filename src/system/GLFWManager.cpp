@@ -1,4 +1,5 @@
 #include "GLFWManager.h"
+#include "Application.h"
 
 void GLFWManager::keyCallback(GLFWwindow* handle, int key, int scancode, int action, int mods)
 {
@@ -36,7 +37,8 @@ Window *GLFWManager::init(int windowWidth, int windowHeight, const char *title) 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	
-	//glfwWindowHint(GLFW_SAMPLES, 4);
+	if (Application::useMSAA)
+		glfwWindowHint(GLFW_SAMPLES, 4);
 	
 	GLFWwindow *handle = glfwCreateWindow(windowWidth, windowHeight, title, nullptr, nullptr);
 	if (handle == nullptr)

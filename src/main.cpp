@@ -4,6 +4,9 @@
 #include "util/Timer.h"
 #include "util/ModelLoader.h"
 #include "world/FlyCamera.h"
+#include "materials/SimpleMaterial.h"
+#include "materials/MaterialManager.h"
+#include "world/Terrain.h"
 
 #include <vector>
 #include <memory>
@@ -15,10 +18,43 @@ Node *root;
 Spatial *rotor;
 FlyCamera *camera;
 
+void picking()
+{
+	int x = GLFWManager::window->getWidth() / 2;
+	int y = GLFWManager::window->getHeight() / 2;
+	
+	
+	float depth;
+	glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+	
+	if (depth < 1.f)
+	{
+		vec4 t(0, 0, depth * 2.f - 1.f, 1.f);
+		
+		t = inverse(camera->projMat) * t;
+		t = camera->transform * t;
+		
+		vec3 r = vec3(t) / t.w;
+		
+		rotor->transform = translate(IDENTITY_MATRIX, r);
+	}
+	
+	
+}
+
+int prevState = GLFW_RELEASE;
 void process(float delta)
 {
 	camera->update(delta);
-	rotor->transform = rotate(rotor->transform, delta, vec3(0, 0, 1));
+	//rotor->transform = rotate(rotor->transform, delta, vec3(0, 0, 1));
+	
+	
+	int state = window->getMouseButton(GLFW_MOUSE_BUTTON_LEFT);
+	
+	if (state == GLFW_PRESS && prevState == GLFW_RELEASE)
+		picking();
+	
+	prevState = state;
 }
 
 void loop()
@@ -47,8 +83,9 @@ void quit()
 
 int main()
 {
-	
 	GLFWManager::init(700, 700, "moonshine");
+	MaterialManager::init();
+	
 	window = GLFWManager::window;
 
 	renderer = new Renderer();
@@ -59,37 +96,13 @@ int main()
 	
 	rotor = new Spatial();
 	rotor->autoName();
-	rotor->transform = translate(rotor->transform, vec3(0, 0, -3));
+	rotor->transform = translate(rotor->transform, vec3(0, 0, -4));
 	root->addChild(rotor);
 	
-	/*std::vector<float> vertices = {
-		-5.f, 0.f, -5.f,
-		-5.f, 0.f, 5.f,
-		5.f,  0.f, -5.f,
-		5.f,  0.f, 5.f
-	};
-
-	std::vector<int> indices = { 0, 1, 2, 1, 2, 3};
-	std::vector<VertexDataType> types = { VertexDataType::POSITION};
 	
-	std::shared_ptr<BaseMaterial> material(new BaseMaterial(
-			"res/shaders/basic.vert",
-			"res/shaders/basic.frag",
-			types));
+	root->addChild(new Terrain());
 	
-	auto mesh = new Mesh(vertices, indices, material);
-	mesh->autoName();
-	root->addChild(mesh);*/
-	
-	
-	std::vector<VertexDataType> types2 = { VertexDataType::POSITION, VertexDataType::NORMAL};
-	std::shared_ptr<BaseMaterial> material2(new BaseMaterial(
-			"res/shaders/simple.vert",
-			"res/shaders/simple.frag",
-			types2));
-	
-	ModelLoader::load("res/models/monkey2.obj", rotor, material2);
-	
+	ModelLoader::load("res/models/cube.obj", rotor, MaterialManager::defaultMaterial, 0.1f);
 	
 	camera = new FlyCamera(1.1f, window->getWidth(), window->getHeight());
 	camera->name = "Camera";
@@ -97,8 +110,6 @@ int main()
 	
 	renderer->setCamera(camera);
 	
-	
-	//root->recursivePrint();
 	loop();
 	quit();
 

@@ -1,25 +1,28 @@
 #pragma once
 
-#include "Spatial.h"
-#include "../common/GLDrawable.h"
 #include "../common/BaseMaterial.h"
-#include "../system/RenderContext.h"
+#include "Drawable.h"
 #include <memory>
 
-#define MACRO_BUFFER_OFFSET(idx) (static_cast<char*>(0) + (idx))
 
-class Mesh : public Spatial
+
+class Mesh : public Drawable
 {
 	MACRO_NODE_DECL()
 	
-private:
-	void bufferData(const VertexAttribSetup &vas);
 
-	const bool indexed;
-	GLsizei elemCount;
+
+private:
+
 
 
 protected:
+	Mesh(bool indexed);
+	
+	void bufferData(const VertexAttribSetup &vas);
+	
+	const bool indexed;
+	GLsizei elemCount;
 	
 	GLuint vao, vbo, ibo;
 	
@@ -27,7 +30,6 @@ protected:
 	std::vector<int> indices;
 	
 public:
-	//using GLDrawable::GLDrawable;
 	
 	std::shared_ptr<BaseMaterial> material;
 
@@ -36,8 +38,7 @@ public:
 	
 	virtual ~Mesh() override;
 
-
-	void draw(const RenderContext &context);
+	virtual void draw(const RenderContext &context) override;
 
 };
 

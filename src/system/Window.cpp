@@ -46,3 +46,7 @@ void Window::getCursorPos(double *xpos, double *ypos) const {
 bool Window::isKeyPressed(int key) const {
 	return glfwGetKey(handle, key) == GLFW_PRESS;
 }
+
+bool Window::getMouseButton(int button) {
+	return glfwGetMouseButton(handle, button) == GLFW_PRESS;
+}

@@ -4,7 +4,7 @@
 #include "tiny_obj_loader.h"
 
 
-void ModelLoader::load(const std::string &path, Node *to, std::shared_ptr<BaseMaterial> material)
+void ModelLoader::load(const std::string &path, Node *to, std::shared_ptr<BaseMaterial> material, float scale = 1.f)
 {
 	bool normals = true;
 	bool texcoords = false;
@@ -43,9 +43,9 @@ void ModelLoader::load(const std::string &path, Node *to, std::shared_ptr<BaseMa
 				tinyobj::index_t idx = shape.mesh.indices[index_offset + v];
 				
 				int id = idx.vertex_index;
-				tinyobj::real_t vx = attrib.vertices[3*id+0];
-				tinyobj::real_t vy = attrib.vertices[3*id+1];
-				tinyobj::real_t vz = attrib.vertices[3*id+2];
+				tinyobj::real_t vx = attrib.vertices[3*id+0] * scale;
+				tinyobj::real_t vy = attrib.vertices[3*id+1] * scale;
+				tinyobj::real_t vz = attrib.vertices[3*id+2] * scale;
 				
 				vertices[p++] = vx;
 				vertices[p++] = vy;

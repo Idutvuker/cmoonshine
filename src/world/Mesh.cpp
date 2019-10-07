@@ -1,6 +1,9 @@
 #include "Mesh.h"
+#include "../materials/MaterialManager.h"
 
 #include <utility>
+
+#define MACRO_BUFFER_OFFSET(idx) (static_cast<char*>(0) + (idx))
 
 void Mesh::bufferData(const VertexAttribSetup &vas)
 {
@@ -54,6 +57,8 @@ Mesh::Mesh(const std::vector<float> &vertices, std::shared_ptr<BaseMaterial> mat
 	bufferData(material->vertexAttribSetup);
 }
 
+Mesh::Mesh(bool indexed) : indexed(indexed) {}
+
 Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &vao);
@@ -67,10 +72,27 @@ void Mesh::draw(const RenderContext &context)
 	
 	glBindVertexArray(vao);
 	
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	if (indexed)
 		glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_INT, 0);
 	else
 		glDrawArrays(GL_TRIANGLES, 0, elemCount);
 	
+	
+	/*glEnable(GL_POLYGON_OFFSET_LINE);
+	glPolygonOffset(-1.0,1.0);
+	
+	MaterialManager::wireframeMaterial->prepare(context);
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
+	if (indexed)
+		glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_INT, 0);
+	else
+		glDrawArrays(GL_TRIANGLES, 0, elemCount);*/
+	
 	glBindVertexArray(0);
 }
+
+

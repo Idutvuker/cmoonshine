@@ -50,9 +50,17 @@ void FlyCamera::update(float delta) {
 		moved = true;
 	}
 	
+	float speedMult = 1.f;
+	
+	if (window->isKeyPressed(GLFW_KEY_LEFT_SHIFT))
+		speedMult = 2.f;
+	
+	
 	if (moveVec != vec3(0, 0, 0))
 	{
-		moveVec = normalize(moveVec) * flySpeed * delta;
+		moveVec = normalize(moveVec) * flySpeed * speedMult * delta;
+		
+		
 		
 		transMat = translate(transMat, mat3(rotMat) * moveVec);
 	}

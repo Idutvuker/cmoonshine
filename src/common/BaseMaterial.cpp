@@ -32,12 +32,15 @@ void BaseMaterial::use() {
 	glUseProgram(program);
 }
 
-BaseMaterial::BaseMaterial(const std::string &vertexShaderFilepath, const std::string &fragmentShaderFilepath,
-						   const std::vector<VertexDataType> &dataTypes) :
+BaseMaterial::BaseMaterial(
+							const std::string &vertexShaderFilepath,
+							const std::string &fragmentShaderFilepath,
+							const std::vector<VertexDataType> &dataTypes,
+							const std::string &header) :
 		vertexAttribSetup(dataTypes)
 {
-	Shader vertexShader = Shader::loadFromFile(GL_VERTEX_SHADER, vertexShaderFilepath);
-	Shader fragmentShader = Shader::loadFromFile(GL_FRAGMENT_SHADER, fragmentShaderFilepath);
+	Shader vertexShader = Shader::loadFromFile(GL_VERTEX_SHADER, vertexShaderFilepath, header);
+	Shader fragmentShader = Shader::loadFromFile(GL_FRAGMENT_SHADER, fragmentShaderFilepath, header);
 	
 	program = glCreateProgram();
 	glAttachShader(program, vertexShader.shader);
@@ -52,7 +55,7 @@ BaseMaterial::BaseMaterial(const std::string &vertexShaderFilepath, const std::s
 		char infoLog[1024];
 		glGetProgramInfoLog(program, sizeof(infoLog), 0, infoLog);
 		
-		Log::e("Shader Program linking error:\n", infoLog);
+		Log::e(vertexShaderFilepath + " <-> " + fragmentShaderFilepath + " program linking error:\n", infoLog);
 	}
 	
 	vertexShader.deleteShader();
@@ -100,11 +103,11 @@ void BaseMaterial::loadUniforms() {
 		
 		
 		bool def = false;
-		for (int i = 0; i < DefUniform::_ENUM_SIZE; i++)
+		for (int j = 0; j < DefUniform::_ENUM_SIZE; j++)
 		{
-			if (strcmp(DefUniformNames[i], name) == 0)
+			if (strcmp(DefUniformNames[j], name) == 0)
 			{
-				DefUniformLocations[i] = location;
+				DefUniformLocations[j] = location;
 				def = true;
 				break;
 			}

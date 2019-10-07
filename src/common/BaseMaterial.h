@@ -61,7 +61,8 @@ public:
 	BaseMaterial(
 				const std::string &vertexShaderFilepath,
 				const std::string &fragmentShaderFilepath,
-				const std::vector<VertexDataType> &dataTypes);
+				const std::vector<VertexDataType> &dataTypes,
+				const std::string &header = std::string());
 
 	void use();
 

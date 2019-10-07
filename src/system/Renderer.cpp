@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Application.h"
 
 void Renderer::recursiveRender(Node *node, int depth = 1) {
 	context.Model = stack[depth - 1];
@@ -6,9 +7,9 @@ void Renderer::recursiveRender(Node *node, int depth = 1) {
 	if (Spatial * spatial = node->instanceOf<Spatial>())
 	{
 		context.Model = context.Model * spatial->transform;
-		if (Mesh * mesh = node->instanceOf<Mesh>())
+		if (Drawable * drawable = node->instanceOf<Drawable>())
 		{
-			mesh->draw(context);
+			drawable->draw(context);
 		}
 	}
 	
@@ -32,10 +33,14 @@ Renderer::Renderer(int maxHeight) :
 {
 	stack[0] = mat4(1.0f);
 	
+	
+	
 	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_MULTISAMPLE);
+	
+	if (Application::useMSAA)
+		glEnable(GL_MULTISAMPLE);
 	
 	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 }

@@ -38,6 +38,8 @@ public:
 
 	bool isKeyPressed(int key) const;
 	
+	bool getMouseButton(int button);
+	
 	void setCurPosCallback(GLFWcursorposfun posCallback);
 };
 
