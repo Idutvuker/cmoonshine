@@ -5,6 +5,8 @@ layout (location = 0) in uint data;
 uniform mat4 ModelViewProjMat;
 uniform mat4 ModelMat;
 
+const float scale = 1;
+
 out struct VS_OUT
 {
 	vec3 normal;
@@ -34,7 +36,7 @@ void main()
 	else
 		y += t;
 
-	vec4 position = vec4(x, y, z, 1.0);
+	vec4 position = vec4(x * scale, y * scale, z * scale, 1.0);
 
 	float nx = (data >> uint(11) & uint(2047)) / 1023.f - 1.f;
 	float ny = (data & uint(2047)) / 1023.f - 1.f;

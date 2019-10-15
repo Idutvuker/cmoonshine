@@ -1,7 +1,7 @@
 #pragma once
 
 #include "VoxVertex.h"
-#include "VoxelGrid.h"
+#include "Buffer3.h"
 #include "MCTables.h"
 #include "../util/geometry.h"
 
@@ -24,7 +24,13 @@ float interp(T val1, T val2, T isolevel)
 }
 
 template<typename T, int sizeX, int sizeY, int sizeZ>
-uint32 marchingCubes(const VoxelGrid<T, sizeX, sizeY, sizeZ> &grid, T isolevel, PackedVoxVertex vertices[], GLuint indices[])
+uint32 marchingCubes(
+		const Buffer3<T, sizeX, sizeY, sizeZ> &grid,
+		T isolevel,
+		PackedVoxVertex vertices[],
+		Terrain * terrain,
+		const ivec3 &from,
+		const ivec3 &to)
 {
 	using namespace MCTABLES;
 	
@@ -34,20 +40,18 @@ uint32 marchingCubes(const VoxelGrid<T, sizeX, sizeY, sizeZ> &grid, T isolevel, 
 	
 	T values[8];
 	
-	VoxVertex * voxVertices[12];
-	
 	struct VoxCoord{
 		ivec3 pos;
 		int dir;
 	} voxCoord[12];
 	
-	for (int x = 0; x < grid.dimX; x++)
+	for (int x = from.x; x < to.x; x++)
 	{
-		for (int y = 0; y < grid.dimY - 1; y++)
+		for (int y = from.y; y < to.y - 1; y++)
 		{
-			if (x == grid.dimX - 1)
+			if (x == to.x - 1)
 				break;
-			for (int z = 0; z < grid.dimZ - 1; z++)
+			for (int z = from.z; z < to.z - 1; z++)
 			{
 				
 				int bits = 0;
@@ -115,10 +119,12 @@ uint32 marchingCubes(const VoxelGrid<T, sizeX, sizeY, sizeZ> &grid, T isolevel, 
 					VoxVertex * vert[3];
 					uint32 ind[3];
 					vec3 pos[3];
+					
+					std::vector<GLuint> * indices = terrain->getChunkFromCoord(x, y, z);
 					for (int j = 0; j < 3; j++)
 					{
 						vert[j] = &cache[vc[j].pos.x % 2][vc[j].pos.y][vc[j].pos.z][vc[j].dir];
-						indices[indCount++] = 3 * grid.rawId(vc[j].pos) + vc[j].dir;
+						indices->push_back(3 * grid.rawId(vc[j].pos) + vc[j].dir);
 						
 						pos[j] = vc[j].pos;
 						if (vc[j].dir == 0)
@@ -192,13 +198,13 @@ private:
 	}
 	
 	template<typename T>
-	void marchingCubes(const VoxelGrid<T, size, size, size> &grid, T isolevel)
+	void marchingCubes(const Buffer3<T, size, size, size> &grid, T isolevel)
 	{
 		using namespace MCTABLES;
 		
 		std::vector<Vertex> vertList{};
 		
-		VoxelGrid<ivec3, 2, size, size> vertCache;
+		Buffer3<ivec3, 2, size, size> vertCache;
 		T values[8];
 		int voxVertices[12];
 		
@@ -313,7 +319,7 @@ private:
 	}
 	
 public:
-	VoxelGrid<float, size, size, size> _grid{};
+	Buffer3<float, size, size, size> _grid{};
 	
 };
 */

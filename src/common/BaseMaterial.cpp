@@ -53,7 +53,7 @@ BaseMaterial::BaseMaterial(
 	if (!success)
 	{
 		char infoLog[1024];
-		glGetProgramInfoLog(program, sizeof(infoLog), 0, infoLog);
+		glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
 		
 		Log::e(vertexShaderFilepath + " <-> " + fragmentShaderFilepath + " program linking error:\n", infoLog);
 	}

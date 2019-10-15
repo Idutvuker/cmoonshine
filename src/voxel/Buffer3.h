@@ -3,10 +3,9 @@
 #include "../util/glmath.h"
 
 template <typename T, int sizeX, int sizeY, int sizeZ>
-class VoxelGrid
+struct Buffer3
 {
-public:
-	T data[sizeX][sizeY][sizeZ];
+	T data[sizeX * sizeY * sizeZ];
 	
 	const int dimX = sizeX;
 	const int dimY = sizeX;
@@ -23,7 +22,7 @@ public:
 	T safeGet(int x, int y, int z, T def = 0)
 	{
 		if (inBounds(x, y, z))
-			return data[x][y][z];
+			return data[rawId(x, y, z)];
 		return def;
 	}
 	
@@ -31,20 +30,23 @@ public:
 	void safeSet(int x, int y, int z, T val)
 	{
 		if (inBounds(x, y, z))
-			data[x][y][z] = val;
+			data[rawId(x, y, z)] = val;
+	}
+	
+	
+	
+	inline
+	T& operator[](uint32 i)
+	{
+		return data[i];
 	}
 	
 	inline
-	T& operator()(int x, int y, int z)
+	T operator[](uint32 i) const
 	{
-		return data[x][y][z];
+		return data[i];
 	}
 	
-	inline
-	T operator()(int x, int y, int z) const
-	{
-		return data[x][y][z];
-	}
 	
 	inline
 	uint32 rawId(uint32 x, uint32 y, uint32 z) const
@@ -57,6 +59,20 @@ public:
 	{
 		return v.x * sizeY * sizeZ + v.y * sizeZ + v.z;
 	}
+	
+	inline
+	T& operator()(int x, int y, int z)
+	{
+		return data[rawId(x, y, z)];
+	}
+	
+	inline
+	T operator()(int x, int y, int z) const
+	{
+		return data[rawId(x, y, z)];
+	}
+	
+
 };
 
 

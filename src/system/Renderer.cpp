@@ -42,6 +42,9 @@ Renderer::Renderer(int maxHeight) :
 	if (Application::useMSAA)
 		glEnable(GL_MULTISAMPLE);
 	
+	if (Application::wireframe)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
 	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 }
 

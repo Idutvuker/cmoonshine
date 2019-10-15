@@ -8,6 +8,7 @@ public:
 	static int windowHeight;
 	
 	static bool useMSAA;
+	static bool wireframe;
 	
 	
 	static void init();

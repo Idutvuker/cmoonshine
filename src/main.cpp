@@ -17,8 +17,9 @@ Timer *timer;
 Node *root;
 Spatial *rotor;
 FlyCamera *camera;
+Terrain *terrain;
 
-void picking()
+void picking(float val)
 {
 	int x = GLFWManager::window->getWidth() / 2;
 	int y = GLFWManager::window->getHeight() / 2;
@@ -35,8 +36,9 @@ void picking()
 		t = camera->transform * t;
 		
 		vec3 r = vec3(t) / t.w;
+		terrain->change(r, val);
 		
-		rotor->transform = translate(IDENTITY_MATRIX, r);
+		//rotor->transform = translate(IDENTITY_MATRIX, r);
 	}
 	
 	
@@ -52,7 +54,11 @@ void process(float delta)
 	int state = window->getMouseButton(GLFW_MOUSE_BUTTON_LEFT);
 	
 	if (state == GLFW_PRESS && prevState == GLFW_RELEASE)
-		picking();
+		picking(1.f);
+	
+	//state = window->getMouseButton(GLFW_MOUSE_BUTTON_RIGHT);
+	//if (state == GLFW_PRESS && prevState == GLFW_RELEASE)
+	//	picking(-1.f);
 	
 	prevState = state;
 }
@@ -99,8 +105,8 @@ int main()
 	rotor->transform = translate(rotor->transform, vec3(0, 0, -4));
 	root->addChild(rotor);
 	
-	
-	root->addChild(new Terrain());
+	terrain = new Terrain();
+	root->addChild(terrain);
 	
 	ModelLoader::load("res/models/cube.obj", rotor, MaterialManager::defaultMaterial, 0.1f);
 	
