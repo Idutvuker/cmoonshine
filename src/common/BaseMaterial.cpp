@@ -36,15 +36,24 @@ BaseMaterial::BaseMaterial(
 							const std::string &vertexShaderFilepath,
 							const std::string &fragmentShaderFilepath,
 							const std::vector<VertexDataType> &dataTypes,
-							const std::string &header) :
+							const std::string &header,
+							const std::string &geometryShaderFilepath) :
 		vertexAttribSetup(dataTypes)
 {
 	Shader vertexShader = Shader::loadFromFile(GL_VERTEX_SHADER, vertexShaderFilepath, header);
 	Shader fragmentShader = Shader::loadFromFile(GL_FRAGMENT_SHADER, fragmentShaderFilepath, header);
 	
+	
 	program = glCreateProgram();
 	glAttachShader(program, vertexShader.shader);
 	glAttachShader(program, fragmentShader.shader);
+	
+	if (!geometryShaderFilepath.empty())
+	{
+		Shader geometryShader = Shader::loadFromFile(GL_GEOMETRY_SHADER, geometryShaderFilepath, header);
+		glAttachShader(program, geometryShader.shader);
+	}
+	
 	glLinkProgram(program);
 	
 	GLint success;
@@ -84,6 +93,12 @@ void BaseMaterial::setUniform(GLint location, GLfloat value) {
 	glUniform1fv(location, 1, &value);
 }
 
+void BaseMaterial::setUniform(GLint location, int value) {
+	//Log::d("uniform", location);
+	glUniform1i(location, value);
+}
+
+
 void BaseMaterial::loadUniforms() {
 	int count;
 	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
@@ -119,3 +134,4 @@ void BaseMaterial::loadUniforms() {
 }
 
 BaseMaterial::~BaseMaterial(){}
+

@@ -53,12 +53,11 @@ void process(float delta)
 	
 	int state = window->getMouseButton(GLFW_MOUSE_BUTTON_LEFT);
 	
-	if (state == GLFW_PRESS && prevState == GLFW_RELEASE)
-		picking(1.f);
-	
-	//state = window->getMouseButton(GLFW_MOUSE_BUTTON_RIGHT);
-	//if (state == GLFW_PRESS && prevState == GLFW_RELEASE)
-	//	picking(-1.f);
+	if (state == GLFW_PRESS)
+		picking(delta);
+
+	if (window->getMouseButton(GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+		picking(-delta);
 	
 	prevState = state;
 }
@@ -68,7 +67,9 @@ void loop()
 	while (!window->shouldClose())
 	{
 		double delta = timer->tick();
-
+		//Log::d(1.0 / delta);
+		
+		
 		glfwPollEvents();
 
 		process((float) delta);

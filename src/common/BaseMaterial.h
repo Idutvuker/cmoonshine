@@ -48,6 +48,8 @@ private:
 	void setUniform(GLint location, const vec3 &value);
 
 	void setUniform(GLint location, GLfloat value);
+	
+	void setUniform(GLint location, int value);
 
 	std::map<std::string, GLint> locTable;
 
@@ -62,7 +64,8 @@ public:
 				const std::string &vertexShaderFilepath,
 				const std::string &fragmentShaderFilepath,
 				const std::vector<VertexDataType> &dataTypes,
-				const std::string &header = std::string());
+				const std::string &header = std::string(),
+				const std::string &geometryShaderFilepath = std::string());
 
 	void use();
 

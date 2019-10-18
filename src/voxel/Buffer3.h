@@ -5,7 +5,12 @@
 template <typename T, int sizeX, int sizeY, int sizeZ>
 struct Buffer3
 {
-	T data[sizeX * sizeY * sizeZ];
+	T *data;//[sizeX * sizeY * sizeZ];
+	
+	Buffer3()
+	{
+		data = new T[sizeX * sizeY * sizeZ]();
+	}
 	
 	const int dimX = sizeX;
 	const int dimY = sizeX;

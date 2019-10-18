@@ -12,24 +12,21 @@ class Terrain : public Drawable
 {
 	MACRO_NODE_DECL();
 private:
-	static const int chX = 1;
-	static const int chY = 1;
-	static const int chZ = 1;
 	
-	static const int chunkSize = 8;
-	
-	static const int dimX = chX * chunkSize;
-	static const int dimY = chY * chunkSize;
-	static const int dimZ = chZ * chunkSize;
+	static const int dimX = 16;
+	static const int dimY = 16;
+	static const int dimZ = 16;
 	
 	PackedVoxVertex vertices[3 * dimX * dimY * dimZ];
-	std::vector<GLuint> indices[chX * chY * chZ];//[dimX * dimY * dimZ * 5];
 	
-	Buffer3<float, dimX, dimY, dimZ> data{};
+	Buffer3<float, dimX, dimY, dimZ> grid{};
 	
 	GLuint vao;
 	GLuint vbo;
-	GLuint ibos[chX * chY * chZ];
+	GLuint tbo;
+	GLuint buf_tex, mc_tex;
+	
+	int voxelCount;
 	
 	
 	BaseMaterial material{
@@ -37,14 +34,14 @@ private:
 						"res/shaders/terrain.frag", {},
 						"#define DIMX " + std::to_string(dimX) +
 						"\n#define DIMY " + std::to_string(dimY) +
-	  					"\n#define DIMZ " + std::to_string(dimZ)
+	  					"\n#define DIMZ " + std::to_string(dimZ)+"\n",
+	  					"res/shaders/terrain.geom"
 	};
 	
 public:
 	const float isolevel = -1.f;
 	
-	static inline int getChunkId(int cx, int cy, int cz);
-	inline std::vector<GLuint>* getChunkFromCoord(int x, int y, int z);
+	
 	
 	void change(vec3 pos, float val);
 	

@@ -53,7 +53,7 @@ Window *GLFWManager::init(int windowWidth, int windowHeight, const char *title) 
 	glfwMakeContextCurrent(handle);
 	glfwSetKeyCallback(handle, keyCallback);
 	
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 	/*GLenum error = glGetError();
 
 	if (error != GL_NO_ERROR) {

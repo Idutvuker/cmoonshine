@@ -44,7 +44,7 @@ THE SOFTWARE.
 // version 1.0.2 : Improve parsing speed by about a factor of 2 for large
 // files(#105)
 // version 1.0.1 : Fixes a shape is lost if obj ends with a 'usemtl'(#104)
-// version 1.0.0 : Change data structure. Change license from BSD to MIT.
+// version 1.0.0 : Change grid structure. Change license from BSD to MIT.
 //
 
 //
@@ -402,7 +402,7 @@ typedef struct callback_t_ {
   // if
   // a material not found in .mtl
   void (*usemtl_cb)(void *user_data, const char *name, int material_id);
-  // `materials` = parsed material data.
+  // `materials` = parsed material grid.
   void (*mtllib_cb)(void *user_data, const material_t *materials,
                     int num_materials);
   // There may be multiple group names
@@ -634,7 +634,7 @@ struct vertex_index_t {
       : v_idx(vidx), vt_idx(vtidx), vn_idx(vnidx) {}
 };
 
-// Internal data structure for face representation
+// Internal grid structure for face representation
 // index + smoothing group.
 struct face_t {
   unsigned int
@@ -645,7 +645,7 @@ struct face_t {
   face_t() : smoothing_group_id(0), pad_(0) {}
 };
 
-// Internal data structure for line representation
+// Internal grid structure for line representation
 struct __line_t {
   // l v1/vt1 v2/vt2 ...
   // In the specification, line primitrive does not have normal index, but
@@ -653,7 +653,7 @@ struct __line_t {
   std::vector<vertex_index_t> vertex_indices;
 };
 
-// Internal data structure for points representation
+// Internal grid structure for points representation
 struct __points_t {
   // p v1 v2 ...
   // In the specification, point primitrive does not have normal index and
