@@ -1,4 +1,5 @@
 #include "BaseMaterial.h"
+#include "../util/FileReader.h"
 
 const char * const BaseMaterial::DefUniformNames[] = {
 		MACRO_DEFUNIFORM_ENUM(MACRO_MAKE_STRING)
@@ -34,25 +35,28 @@ void BaseMaterial::use() {
 
 
 
-BaseMaterial::BaseMaterial(
-		const std::string &vertexShaderFilepath,
-		const std::string &fragmentShaderFilepath,
-		const std::string &geometryShaderFilepath,
-		const std::string &header)
-		
-			//vertexAttribSetup(*vas)
+BaseMaterial::BaseMaterial(const std::string &vertexShaderFilepath, const std::string &fragmentShaderFilepath,
+						   const std::string &geometryShaderFilepath, const std::vector<std::string> &defines)
 {
-	Shader vertexShader = Shader::loadFromFile(GL_VERTEX_SHADER, vertexShaderFilepath, header);
-	Shader fragmentShader = Shader::loadFromFile(GL_FRAGMENT_SHADER, fragmentShaderFilepath, header);
-	
+	std::string header = "#version 330 core\n";
+	for (auto &def : defines)
+		header += "#define " + def + '\n';
 	
 	program = glCreateProgram();
+	
+	std::string vs_src = header + FileReader::readText(vertexShaderFilepath);
+	Shader vertexShader = Shader(GL_VERTEX_SHADER, vs_src.data());
 	glAttachShader(program, vertexShader.shader);
+	
+	
+	std::string fs_src = header + FileReader::readText(fragmentShaderFilepath);
+	Shader fragmentShader = Shader(GL_FRAGMENT_SHADER, fs_src.data());
 	glAttachShader(program, fragmentShader.shader);
 	
 	if (!geometryShaderFilepath.empty())
 	{
-		Shader geometryShader = Shader::loadFromFile(GL_GEOMETRY_SHADER, geometryShaderFilepath, header);
+		std::string gs_src = header + FileReader::readText(geometryShaderFilepath);
+		Shader geometryShader = Shader(GL_GEOMETRY_SHADER, gs_src.data());
 		glAttachShader(program, geometryShader.shader);
 	}
 	

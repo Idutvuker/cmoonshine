@@ -57,11 +57,8 @@ private:
 	void loadUniforms();
 
 protected:
-	BaseMaterial(
-				const std::string &vertexShaderFilepath,
-				const std::string &fragmentShaderFilepath,
-				const std::string &geometryShaderFilepath,
-				const std::string &header);
+	BaseMaterial(const std::string &vertexShaderFilepath, const std::string &fragmentShaderFilepath,
+				 const std::string &geometryShaderFilepath, const std::vector<std::string> &defines);
 	
 public:
 	struct Definition
@@ -69,7 +66,7 @@ public:
 		std::string vertexShaderFilepath;
 		std::string fragmentShaderFilepath;
 		std::string geometryShaderFilepath;
-		std::string header;
+		std::vector<std::string> defines;
 	};
 	
 	
@@ -78,7 +75,7 @@ public:
 					def.vertexShaderFilepath,
 					def.fragmentShaderFilepath,
 					def.geometryShaderFilepath,
-					def.header)
+					def.defines)
 	{}
 	
 	//VertexAttribSetup vertexAttribSetup;

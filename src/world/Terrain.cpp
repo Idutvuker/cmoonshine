@@ -45,9 +45,10 @@ Terrain::Terrain()
 	def.vertexShaderFilepath = "res/shaders/terrain.vert";
 	def.fragmentShaderFilepath = "res/shaders/terrain.frag";
 	def.geometryShaderFilepath = "res/shaders/terrain.geom";
-	def.header = "#define DIMX " + std::to_string(dimX) +
-			"\n#define DIMY " + std::to_string(dimY) +
-			"\n#define DIMZ " + std::to_string(dimZ)+"\n";
+	def.defines = {
+			"DIMX " + std::to_string(dimX),
+			"DIMY " + std::to_string(dimY),
+			"DIMZ " + std::to_string(dimZ)};
 	
 	material = new BaseMaterial(def);
 	
