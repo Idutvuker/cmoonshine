@@ -19,13 +19,13 @@ struct VoxVertex
 		}
 		
 		
-		uint32_t n_x = (normal.x + 1.f) * 1023 + 0.5f;
-		uint32_t n_y = (normal.y + 1.f) * 1023 + 0.5f;
+		uint32_t n_x = (uint32_t)((normal.x + 1.f) * 1023 + 0.5f);
+		uint32_t n_y = (uint32_t)((normal.y + 1.f) * 1023 + 0.5f);
 		//uint32_t n_z = (normal.z + 1) * 127 + 0.5f;
 		
 		
 		
-		uint32_t pos = edgePos * 255.f + 0.5f;
+		uint32_t pos = (uint32_t)(edgePos * 255.f + 0.5f);
 		
 //		PackedVoxVertex res =
 //							(pos << 24) +

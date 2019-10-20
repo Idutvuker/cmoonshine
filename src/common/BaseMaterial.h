@@ -6,10 +6,10 @@
 #include <vector>
 #include <map>
 
-#include "VertexAttribSetup.h"
 #include "Shader.h"
 #include "../util/glmath.h"
 #include "../system/RenderContext.h"
+#include "VertexAttrib.h"
 
 #define MACRO_DEFUNIFORM_ENUM(DO) \
 	DO(ModelViewProjMat) \
@@ -52,20 +52,38 @@ private:
 	void setUniform(GLint location, int value);
 
 	std::map<std::string, GLint> locTable;
-
+	
+	void loadAttributes();
 	void loadUniforms();
 
-public:
-	VertexAttribSetup vertexAttribSetup;
-	
-
-
+protected:
 	BaseMaterial(
 				const std::string &vertexShaderFilepath,
 				const std::string &fragmentShaderFilepath,
-				const std::vector<VertexDataType> &dataTypes,
-				const std::string &header = std::string(),
-				const std::string &geometryShaderFilepath = std::string());
+				const std::string &geometryShaderFilepath,
+				const std::string &header);
+	
+public:
+	struct Definition
+	{
+		std::string vertexShaderFilepath;
+		std::string fragmentShaderFilepath;
+		std::string geometryShaderFilepath;
+		std::string header;
+	};
+	
+	
+	BaseMaterial(const Definition &def) :
+			BaseMaterial(
+					def.vertexShaderFilepath,
+					def.fragmentShaderFilepath,
+					def.geometryShaderFilepath,
+					def.header)
+	{}
+	
+	//VertexAttribSetup vertexAttribSetup;
+	std::vector<VertexAttrib> attribs;
+	
 
 	void use();
 

@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include "../common/BaseMaterial.h"
@@ -9,3 +10,4 @@ public:
 	SimpleMaterial();
 };
 
+*/

@@ -1,10 +1,9 @@
 #pragma once
 
+#include "../common/VertexAttrib.h"
 #include "../common/BaseMaterial.h"
 #include "Drawable.h"
 #include <memory>
-
-
 
 class Mesh : public Drawable
 {
@@ -19,7 +18,7 @@ private:
 protected:
 	Mesh(bool indexed);
 	
-	void bufferData(const VertexAttribSetup &vas);
+	void bufferData(const std::vector<VertexAttrib> &attribs);
 	
 	const bool indexed;
 	GLsizei elemCount;

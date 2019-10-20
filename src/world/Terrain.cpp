@@ -6,9 +6,9 @@
 
 void Terrain::change(vec3 pos, float val)
 {
-	int x = pos.x + 0.5f;
-	int y = pos.y + 0.5f;
-	int z = pos.z + 0.5f;
+	int x = (int)(pos.x + 0.5f);
+	int y = (int)(pos.y + 0.5f);
+	int z = (int)(pos.z + 0.5f);
 	
 	if (!grid.inBounds(x, y, z))
 		return;
@@ -25,7 +25,7 @@ void Terrain::change(vec3 pos, float val)
 
 void Terrain::draw(const RenderContext &context)
 {
-	material.prepare(context);
+	material->prepare(context);
 	
 	glBindVertexArray(vao);
 	
@@ -41,6 +41,18 @@ void Terrain::draw(const RenderContext &context)
 
 Terrain::Terrain()
 {
+	BaseMaterial::Definition def;
+	def.vertexShaderFilepath = "res/shaders/terrain.vert";
+	def.fragmentShaderFilepath = "res/shaders/terrain.frag";
+	def.geometryShaderFilepath = "res/shaders/terrain.geom";
+	def.header = "#define DIMX " + std::to_string(dimX) +
+			"\n#define DIMY " + std::to_string(dimY) +
+			"\n#define DIMZ " + std::to_string(dimZ)+"\n";
+	
+	material = new BaseMaterial(def);
+	
+	
+	
 	//transform = translate(IDENTITY_MATRIX, vec3(-5, -5, -5));
 	
 	grid(1, 1, 1) = -4.f;
@@ -75,21 +87,8 @@ Terrain::Terrain()
 	glGenTextures(1, &buf_tex);
 	glBindTexture(GL_TEXTURE_BUFFER, buf_tex);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, tbo);
-	material.setShaderUniform("data", 0);
+	material->setShaderUniform("data", 0);
 	
-	
-	//MC table buffer
-//	GLuint mc_tbo;
-//	glGenBuffers(1, &mc_tbo);
-//	glBindBuffer(GL_TEXTURE_BUFFER, mc_tbo);
-//	glBufferData(GL_TEXTURE_BUFFER, 256 * 16 * sizeof(int), MCTABLES::TRI_TABLE, GL_STATIC_DRAW);
-//
-//	glGenTextures(1, &mc_tex);
-//	glBindTexture(GL_TEXTURE_BUFFER, mc_tex);
-//	glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, mc_tbo);
-	
-//	material.setShaderUniform("TRI_TABLE", 1);
-//	material.setShaderUniform("TRI_TABLE", 1);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

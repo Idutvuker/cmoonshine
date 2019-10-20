@@ -29,6 +29,8 @@ GLenum VertexDataType::getGLType() const {
 GLenum VertexDataType::getGLTypeSize() const {
 	switch (getGLType())
 	{
+		case GL_FLOAT_VEC3:
+			return sizeof(GLfloat) * 3;
 		case GL_FLOAT:
 			return sizeof(GLfloat);
 		case GL_INT:

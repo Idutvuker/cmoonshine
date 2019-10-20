@@ -2,10 +2,11 @@
 #include "../materials/MaterialManager.h"
 
 #include <utility>
+#include <gl/GL.h>
 
 #define MACRO_BUFFER_OFFSET(idx) (static_cast<char*>(0) + (idx))
 
-void Mesh::bufferData(const VertexAttribSetup &vas)
+void Mesh::bufferData(const std::vector<VertexAttrib> &attribs)
 {
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -18,6 +19,14 @@ void Mesh::bufferData(const VertexAttribSetup &vas)
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	
+	int vsize = 0;
+	int stride = 0;
+	for (auto &attr : attribs)
+	{
+		vsize += attr.size;
+		stride += attr.getByteSize();
+	}
+	
 	if (indexed)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -26,14 +35,19 @@ void Mesh::bufferData(const VertexAttribSetup &vas)
 	}
 	else
 	{
-		elemCount = vertices.size() / vas.getVertexSize();
+		elemCount = vertices.size() / vsize;
 	}
 	
-	for (auto attr : vas.setup)
+	int offset = 0;
+	
+	for (auto &attr : attribs)
 	{
-		glVertexAttribPointer(attr.index, attr.size, attr.type, GL_FALSE, attr.stride,
-							  MACRO_BUFFER_OFFSET(attr.offset));
+		glVertexAttribPointer(attr.index, attr.size, attr.type, GL_FALSE, stride,
+							  MACRO_BUFFER_OFFSET(offset));
+		
 		glEnableVertexAttribArray(attr.index);
+		
+		offset += attr.getByteSize();
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -46,7 +60,7 @@ Mesh::Mesh(const std::vector<float> &vertices, const std::vector<int> &indices, 
 		indexed(true),
 		material(material)
 {
-	bufferData(material->vertexAttribSetup);
+	bufferData(material->attribs);
 }
 
 Mesh::Mesh(const std::vector<float> &vertices, std::shared_ptr<BaseMaterial> material) :
@@ -54,7 +68,7 @@ Mesh::Mesh(const std::vector<float> &vertices, std::shared_ptr<BaseMaterial> mat
 		indexed(false),
 		material(material)
 {
-	bufferData(material->vertexAttribSetup);
+	bufferData(material->attribs);
 }
 
 Mesh::Mesh(bool indexed) : indexed(indexed) {}

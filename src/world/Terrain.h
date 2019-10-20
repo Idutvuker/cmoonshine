@@ -29,14 +29,7 @@ private:
 	int voxelCount;
 	
 	
-	BaseMaterial material{
-						"res/shaders/terrain.vert",
-						"res/shaders/terrain.frag", {},
-						"#define DIMX " + std::to_string(dimX) +
-						"\n#define DIMY " + std::to_string(dimY) +
-	  					"\n#define DIMZ " + std::to_string(dimZ)+"\n",
-	  					"res/shaders/terrain.geom"
-	};
+	BaseMaterial *material;
 	
 public:
 	const float isolevel = -1.f;
