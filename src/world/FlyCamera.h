@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Camera.h"
-#include "../system/GLFWManager.h"
 #include "../util/glmath.h"
 
 class FlyCamera: public Camera

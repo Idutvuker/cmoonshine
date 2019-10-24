@@ -1,8 +1,5 @@
 #include "Window.h"
-
-double Window::prevx = 0.0;
-double Window::prevy = 0.0;
-double Window::prevt = 0.0;
+#include "../util/Logger.h"
 
 
 int Window::getWidth() const {
@@ -13,18 +10,26 @@ int Window::getHeight() const {
 	return height;
 }
 
-Window::Window(GLFWwindow *windowHandle) {
-	handle = windowHandle;
+Window::~Window() {
+	glfwDestroyWindow(handle);
+}
+
+Window::Window(int windowWidth, int windowHeight, const char *title) :
+	initialized(true)
+{
+	handle = glfwCreateWindow(windowWidth, windowHeight, title, nullptr, nullptr);
+	
+	if (handle == nullptr)
+	{
+		Log::e("Couldn't create window\n");
+		return;
+	}
+	
 	glfwGetFramebufferSize(handle, &width, &height);
 }
 
-void Window::setCurPosCallback(GLFWcursorposfun posCallback)
-{
+void Window::setCurPosCallback(GLFWcursorposfun posCallback) {
 	glfwSetCursorPosCallback(handle, posCallback);
-}
-
-Window::~Window() {
-	glfwDestroyWindow(handle);
 }
 
 bool Window::shouldClose() const {
@@ -50,3 +55,13 @@ bool Window::isKeyPressed(int key) const {
 bool Window::getMouseButton(int button) {
 	return glfwGetMouseButton(handle, button) == GLFW_PRESS;
 }
+
+void Window::setKeyCallback(GLFWkeyfun callback) {
+	glfwSetKeyCallback(handle, callback);
+}
+
+void Window::makeContextCurrent() {
+	glfwMakeContextCurrent(handle);
+}
+
+

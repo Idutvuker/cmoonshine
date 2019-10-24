@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Application.h"
+#include "Engine.h"
 
 void Renderer::recursiveRender(Node *node, int depth = 1) {
 	context.Model = stack[depth - 1];
@@ -31,18 +32,21 @@ void Renderer::setCamera(Camera *aCamera) {
 Renderer::Renderer(int maxHeight) :
 	stack(maxHeight)
 {
+	using Engine::configuration;
+	using Engine::window;
+	
 	stack[0] = mat4(1.0f);
 	
 	
-	
+	glViewport(0, 0, window->getWidth(), window->getHeight());
 	glCullFace(GL_BACK);
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	
-	if (Application::useMSAA)
+	if (configuration.useMSAA)
 		glEnable(GL_MULTISAMPLE);
 	
-	if (Application::wireframe)
+	if (configuration.wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);

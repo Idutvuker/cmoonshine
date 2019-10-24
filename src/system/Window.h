@@ -1,28 +1,25 @@
 #pragma once
 
+
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
 #include <vector>
 
-#include "../util/Logger.h"
 
 class Window
 {
 	GLFWwindow *handle = nullptr;
-	int width;
-	int height;
-
-
+	int width = 0;
+	int height = 0;
+	
 public:
+	const bool initialized;
 	
-	Window(GLFWwindow *windowHandle);
-	
+	Window(int windowWidth, int windowHeight, const char *title);
 	~Window();
 	
-	static double prevx;
-	static double prevy;
-	static double prevt;
-
 	int getWidth() const;
 
 	int getHeight() const;
@@ -40,6 +37,12 @@ public:
 	
 	bool getMouseButton(int button);
 	
+	void makeContextCurrent();
+	
+	
 	void setCurPosCallback(GLFWcursorposfun posCallback);
+	void setKeyCallback(GLFWkeyfun callback);
+	
+//	friend bool Engine::init(int, int, const char *);
+//	friend void Engine::quit();
 };
-

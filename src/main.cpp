@@ -1,4 +1,4 @@
-#include "system/GLFWManager.h"
+#include "system/Engine.h"
 #include "system/Window.h"
 #include "system/Renderer.h"
 #include "util/Timer.h"
@@ -8,10 +8,8 @@
 #include "materials/MaterialManager.h"
 #include "world/Terrain.h"
 
-#include <vector>
 #include <memory>
 
-Window *window;
 Renderer *renderer;
 Timer *timer;
 Node *root;
@@ -21,8 +19,8 @@ Terrain *terrain;
 
 void picking(float val)
 {
-	int x = GLFWManager::window->getWidth() / 2;
-	int y = GLFWManager::window->getHeight() / 2;
+	int x = Engine::window->getWidth() / 2;
+	int y = Engine::window->getHeight() / 2;
 	
 	
 	float depth;
@@ -47,6 +45,7 @@ void picking(float val)
 int prevState = GLFW_RELEASE;
 void process(float delta)
 {
+	using Engine::window;
 	camera->update(delta);
 	//rotor->transform = rotate(rotor->transform, delta, vec3(0, 0, 1));
 	
@@ -64,6 +63,7 @@ void process(float delta)
 
 void loop()
 {
+	using Engine::window;
 	while (!window->shouldClose())
 	{
 		double delta = timer->tick();
@@ -81,7 +81,7 @@ void loop()
 
 void quit()
 {
-	GLFWManager::quit();
+	Engine::quit();
 
 	delete timer;
 	delete renderer;
@@ -90,12 +90,15 @@ void quit()
 
 int main()
 {
-	GLFWManager::init(700, 700, "moonshine");
+	Engine::init(700, 700, "moonshine");
+	using Engine::window;
+	
 	MaterialManager::init();
 	
-	window = GLFWManager::window;
-
+	
+	
 	renderer = new Renderer();
+	
 	timer = new Timer();
 	
 	root = new Node();

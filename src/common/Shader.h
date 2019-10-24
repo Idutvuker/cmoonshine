@@ -10,8 +10,6 @@ class Shader
 public:
 	GLuint shader;
 
-	static Shader loadFromFile(GLenum type, const std::string &filepath, const std::string &header);
-
 	Shader(GLenum type, const char* source);
 
 	void attach(GLuint program);

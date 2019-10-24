@@ -1,20 +1,25 @@
 #include "FlyCamera.h"
+#include "../system/Engine.h"
 
 
 FlyCamera::FlyCamera(float fov, int width, int height) :
 		Camera(fov, width, height, 0.1f, 100.f)
 {
-	GLFWManager::window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	if (GLFWManager::rawMouseInputSupported())
-		GLFWManager::window->setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+	using Engine::window;
+	using Engine::configuration;
 	
-	GLFWManager::window->getCursorPos(&prevX, &prevY);
+	window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if (configuration.rawMouseSupported)
+		window->setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+	
+	window->getCursorPos(&prevX, &prevY);
 }
 
 
 
 void FlyCamera::update(float delta) {
-	Window *window = GLFWManager::window;
+	using Engine::window;
+	
 	double posX;
 	double posY;
 	
