@@ -7,7 +7,6 @@
 #include <iostream>
 #include <vector>
 
-
 class Window
 {
 	GLFWwindow *handle = nullptr;

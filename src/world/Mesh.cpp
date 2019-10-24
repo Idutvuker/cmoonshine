@@ -31,11 +31,11 @@ void Mesh::bufferData(const std::vector<VertexAttrib> &attribs)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLint) * indices.size(), indices.data(), GL_STATIC_DRAW);
-		elemCount = indices.size();
+		elemCount = (GLsizei) indices.size();
 	}
 	else
 	{
-		elemCount = vertices.size() / vsize;
+		elemCount = (GLsizei) (vertices.size() / vsize);
 	}
 	
 	int offset = 0;
@@ -89,7 +89,7 @@ void Mesh::draw(const RenderContext &context)
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	if (indexed)
-		glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_INT, nullptr);
 	else
 		glDrawArrays(GL_TRIANGLES, 0, elemCount);
 	

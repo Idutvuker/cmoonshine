@@ -5,11 +5,10 @@
 FlyCamera::FlyCamera(float fov, int width, int height) :
 		Camera(fov, width, height, 0.1f, 100.f)
 {
-	using Engine::window;
-	using Engine::configuration;
+	using namespace Engine;
 	
 	window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	if (configuration.rawMouseSupported)
+	if (Configuration::rawMouseSupported)
 		window->setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	
 	window->getCursorPos(&prevX, &prevY);
@@ -18,7 +17,7 @@ FlyCamera::FlyCamera(float fov, int width, int height) :
 
 
 void FlyCamera::update(float delta) {
-	using Engine::window;
+	using namespace Engine;
 	
 	double posX;
 	double posY;
@@ -38,19 +37,19 @@ void FlyCamera::update(float delta) {
 	//transform = yaw * pitch;
 	bool moved = false;
 	vec3 moveVec(0, 0, 0);
-	if (window->isKeyPressed(GLFW_KEY_W)) {
+	if (Input::keyPressed(GLFW_KEY_W)) {
 		moveVec.z -= 1;
 		moved = true;
 	}
-	if (window->isKeyPressed(GLFW_KEY_S)) {
+	if (Input::keyPressed(GLFW_KEY_S)) {
 		moveVec.z += 1;
 		moved = true;
 	}
-	if (window->isKeyPressed(GLFW_KEY_A)) {
+	if (Input::keyPressed(GLFW_KEY_A)) {
 		moveVec.x -= 1;
 		moved = true;
 	}
-	if (window->isKeyPressed(GLFW_KEY_D)) {
+	if (Input::keyPressed(GLFW_KEY_D)) {
 		moveVec.x += 1;
 		moved = true;
 	}

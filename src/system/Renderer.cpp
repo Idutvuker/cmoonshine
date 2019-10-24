@@ -32,8 +32,7 @@ void Renderer::setCamera(Camera *aCamera) {
 Renderer::Renderer(int maxHeight) :
 	stack(maxHeight)
 {
-	using Engine::configuration;
-	using Engine::window;
+	using namespace Engine;
 	
 	stack[0] = mat4(1.0f);
 	
@@ -43,10 +42,10 @@ Renderer::Renderer(int maxHeight) :
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	
-	if (configuration.useMSAA)
+	if (Configuration::useMSAA)
 		glEnable(GL_MULTISAMPLE);
 	
-	if (configuration.wireframe)
+	if (Configuration::wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);

@@ -3,13 +3,15 @@
 
 #include <GLFW/glfw3.h>
 
-struct Configuration
+namespace Engine
 {
-	bool useMSAA = false;
-	bool wireframe = false;
-	bool rawMouseSupported;
-	Configuration() = default;
-	Configuration(int a);
-};
-
+	namespace Configuration
+	{
+		extern bool useMSAA;
+		extern bool wireframe;
+		extern bool rawMouseSupported;
+		
+		void scanSystemConfig();
+	}
+}
 

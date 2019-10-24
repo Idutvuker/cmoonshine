@@ -6,12 +6,13 @@
 #include "../util/Logger.h"
 #include "Window.h"
 #include "Configuration.h"
+#include "Input.h"
 
 namespace Engine
 {
-	extern bool initialized;
 	extern Window *window;
-	extern Configuration configuration;
+	
+	extern bool initialized;
 	
 	bool init(int windowWidth, int windowHeight, const char * title);
 	

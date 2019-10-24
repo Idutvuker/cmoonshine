@@ -45,7 +45,7 @@ void picking(float val)
 int prevState = GLFW_RELEASE;
 void process(float delta)
 {
-	using Engine::window;
+	using namespace Engine;
 	camera->update(delta);
 	//rotor->transform = rotate(rotor->transform, delta, vec3(0, 0, 1));
 	
@@ -63,14 +63,14 @@ void process(float delta)
 
 void loop()
 {
-	using Engine::window;
+	using namespace Engine;
 	while (!window->shouldClose())
 	{
 		double delta = timer->tick();
 		//Log::d(1.0 / delta);
 		
 		
-		glfwPollEvents();
+		Input::pollEvents();
 
 		process((float) delta);
 

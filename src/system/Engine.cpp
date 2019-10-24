@@ -3,25 +3,15 @@
 namespace Engine
 {
 	Window *window;
-	Configuration configuration{};
+
 	bool initialized = false;
 	
 	//private callbacks
 	namespace
 	{
-		void keyCallback(GLFWwindow *handle, int key, int scancode, int action, int mods) {
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-				glfwSetWindowShouldClose(handle, GLFW_TRUE);
-		}
-		
 		void errorCallback(int code, const char *decs) {
 			Log::e("Error callback: ");
 			Log::e(decs);
-		}
-		
-		void scanSystemConfig()
-		{
-			configuration.rawMouseSupported = (glfwRawMouseMotionSupported() == GLFW_TRUE);
 		}
 	}
 	
@@ -55,7 +45,7 @@ namespace Engine
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 		
-		if (configuration.useMSAA)
+		if (Configuration::useMSAA)
 			glfwWindowHint(GLFW_SAMPLES, 4);
 		
 		window = new Window(windowWidth, windowHeight, title);
@@ -63,7 +53,7 @@ namespace Engine
 			return false;
 		
 		window->makeContextCurrent();
-		window->setKeyCallback(keyCallback);
+		window->setKeyCallback(Input::keyCallback);
 		
 		
 		glfwSwapInterval(0);
@@ -76,7 +66,7 @@ namespace Engine
 		}
 		
 		
-		scanSystemConfig();
+		Configuration::scanSystemConfig();
 		
 		initialized = true;
 		return true;
