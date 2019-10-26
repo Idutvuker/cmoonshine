@@ -10,8 +10,11 @@ namespace Engine
 		extern bool useMSAA;
 		extern bool wireframe;
 		extern bool rawMouseSupported;
+		extern bool backfaceCulling;
 		
 		void scanSystemConfig();
+		
+		
 	}
 }
 

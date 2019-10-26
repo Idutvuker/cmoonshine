@@ -58,6 +58,12 @@ void process(float delta)
 	if (window->getMouseButton(GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 		picking(-delta);
 	
+	if (Input::keyJustPressed(GLFW_KEY_Q))
+		picking(-1.0f);
+	
+	if (Input::keyJustPressed(GLFW_KEY_SPACE))
+	{}
+	
 	prevState = state;
 }
 

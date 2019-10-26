@@ -7,7 +7,7 @@ uniform mat4 ModelViewProjMat;
 uniform samplerBuffer data;
 //uniform isamplerBuffer TRI_TABLE;
 
-const float isolevel = -0.5f;
+const float isolevel = ISOLEVEL;
 
 const int EDGE_TABLE[256] = int[](
 0x0, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,

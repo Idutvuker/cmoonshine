@@ -23,6 +23,24 @@ struct Buffer3
 	}
 	
 	
+	void clamp(ivec3 &v)
+	{
+		if (v.x < 0)
+		 	v.x = 0;
+		else if (v.x >= sizeX)
+			v.x = sizeX - 1;
+		
+		if (v.y < 0)
+			v.y = 0;
+		else if (v.y >= sizeY)
+			v.y = sizeY - 1;
+		
+		if (v.z < 0)
+			v.z = 0;
+		else if (v.z >= sizeZ)
+			v.z = sizeZ - 1;
+	}
+	
 	inline
 	T safeGet(int x, int y, int z, T def = 0)
 	{

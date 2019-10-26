@@ -38,9 +38,13 @@ Renderer::Renderer(int maxHeight) :
 	
 	
 	glViewport(0, 0, window->getWidth(), window->getHeight());
-	glCullFace(GL_BACK);
-	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	
+	if (Configuration::backfaceCulling)
+	{
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+	}
 	
 	if (Configuration::useMSAA)
 		glEnable(GL_MULTISAMPLE);

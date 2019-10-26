@@ -5,6 +5,52 @@
 #include "MCTables.h"
 #include "../util/geometry.h"
 
+template<typename T, int sizeX, int sizeY, int sizeZ>
+void preMarchingCubes(
+		const Buffer3<T, sizeX, sizeY, sizeZ> &grid,
+		T isolevel,
+		std::vector<int> &indices,
+		const ivec3 &from,
+		const ivec3 &to)
+{
+	using namespace MCTABLES;
+	
+	T values[8];
+	
+	for (int x = from.x; x < to.x; x++) {
+		for (int y = from.y; y < to.y; y++) {
+			for (int z = from.z; z < to.z; z++)
+			{
+				int bits = 0;
+				int power = 1;
+				
+				
+				for (int i = 0; i < 8; i++)
+				{
+					ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[i];
+					values[i] = grid(vox.x, vox.y, vox.z);
+					//Log::d(values[i]);
+					if (values[i] < isolevel)
+						bits |= power;
+					
+					power <<= 1;
+				}
+				
+				int edges = EDGE_TABLE[bits];
+				
+				if (edges == 0)
+					continue;
+				
+				indices.push_back(grid.rawId(x, y, z));
+				
+			}
+		}
+	}
+}
+
+
+
+
 
 template <int sizeY, int sizeZ>
 void packLayer(VoxVertex cache[sizeY][sizeZ][3], int xLayer, PackedVoxVertex vertices[])

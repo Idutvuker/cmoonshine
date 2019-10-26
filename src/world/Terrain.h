@@ -13,27 +13,31 @@ class Terrain : public Drawable
 	MACRO_NODE_DECL();
 private:
 	
-	static const int dimX = 16;
-	static const int dimY = 16;
-	static const int dimZ = 16;
+	static const int dimX = 8;
+	static const int dimY = 8;
+	static const int dimZ = 8;
 	
-	PackedVoxVertex vertices[3 * dimX * dimY * dimZ];
+	//PackedVoxVertex vertices[3 * dimX * dimY * dimZ];
 	
 	Buffer3<float, dimX, dimY, dimZ> grid{};
+	int locTable[dimX * dimY * dimZ];
+	
+	std::vector<int> tmp_indices;
+	int voxelNum = 0;
 	
 	GLuint vao;
 	GLuint vbo;
 	GLuint tbo;
 	GLuint buf_tex, mc_tex;
 	
-	int voxelCount;
-	
-	
 	BaseMaterial *material;
+	
+	void addToBuffer(const std::vector<int> &vec);
+	void deleteFromBuffer(const ivec3 &from, const ivec3 &to);
 	
 public:
 	const float isolevel = -1.f;
-	
+	int indices[dimX * dimY * dimZ];
 	
 	
 	void change(vec3 pos, float val);

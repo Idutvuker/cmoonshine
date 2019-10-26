@@ -5,6 +5,8 @@ uniform mat4 ModelMat;
 
 const float scale = 1;
 
+layout (location = 0) in int id;
+
 
 float to_float(in uint a)
 {
@@ -13,7 +15,7 @@ float to_float(in uint a)
 
 void main()
 {
-	int id = gl_VertexID;
+	//int id = gl_VertexID;
 	float x = id / (DIMZ * DIMY);
 	float y = id / DIMZ % DIMY;
 	float z = id % DIMZ;
