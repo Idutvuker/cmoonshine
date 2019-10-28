@@ -16,7 +16,7 @@ public:
 	FlyCamera(float fov, int width, int height);
 
 	const double sensitivity = 0.001;
-	const float flySpeed = 3.f;
+	const float flySpeed = 5.0f;
 
 
 	mat4 pitchMat = IDENTITY_MATRIX;

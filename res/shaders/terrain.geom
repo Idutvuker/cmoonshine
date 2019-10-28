@@ -427,16 +427,16 @@ void main()
         vec3 tmp1 = v2 - v1;
         vec3 tmp2 = v3 - v1;
 
-        //_normal = normalize(cross(tmp1, tmp2));
-        _normal = normals[i1];
+        _normal = normalize(cross(tmp1, tmp2));
+        //_normal = normals[i1];
         gl_Position = ModelViewProjMat * (pos + vec4(v1, 0));
         EmitVertex();
 
-        _normal = normals[i2];
+        //_normal = normals[i2];
         gl_Position = ModelViewProjMat * (pos + vec4(v2, 0));
         EmitVertex();
 
-        _normal = normals[i3];
+        //_normal = normals[i3];
         gl_Position = ModelViewProjMat * (pos + vec4(v3, 0));
         EmitVertex();
 

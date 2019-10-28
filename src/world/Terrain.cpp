@@ -14,14 +14,33 @@ void Terrain::change(vec3 pos, float val)
 		return;
 	
 	
-	uint id = grid.rawId(x, y, z);
-	grid[id] += val;
+	const int r = 2;
 	
-	glBindBuffer(GL_TEXTURE_BUFFER, tbo);
-	glBufferSubData(GL_TEXTURE_BUFFER, id * sizeof(float), sizeof(float), grid.data + id);
+	ivec3 from = ivec3(x - r, y - r, z - r);
+	ivec3 to = ivec3(x + r, y + r, z + r);
 	
-	ivec3 from = ivec3(x - 2, y - 2, z - 2);
-	ivec3 to = ivec3(x + 2, y + 2, z + 2);
+	grid.clamp(from);
+	grid.clamp(to);
+	
+	for (int ex = from.x; ex < to.x; ex++)
+		for (int ey = from.y; ey < to.y; ey++)
+			for (int ez = from.z; ez < to.z; ez++)
+			{
+				//vec3 dr = vec3(ex, ey, ez);
+				float dx = (ex - pos.x);
+				float dy = (ey - pos.y);
+				float dz = (ez - pos.z);
+				float len = sqrtf(dx*dx + dy*dy + dz*dz);
+				
+				uint id = grid.rawId(ex, ey, ez);
+				//if (grid[id] > -4.f)
+				grid[id] += (sqrtf(3*r*r) - len) * val;
+			}
+	
+	
+	
+	from = ivec3(x - r - 2, y - r - 2, z - r - 2);
+	to = ivec3(x + r + 2, y + r + 2, z + r + 2);
 	
 	grid.clamp(from);
 	grid.clamp(to);

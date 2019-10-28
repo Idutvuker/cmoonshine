@@ -99,7 +99,7 @@ void quit()
 
 int main()
 {
-	Engine::init(700, 500, "moonshine");
+	Engine::init(800, 800, "moonshine");
 	using Engine::window;
 	
 	MaterialManager::init();
