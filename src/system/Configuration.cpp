@@ -7,7 +7,7 @@ namespace Engine
 		bool useMSAA = false;
 		bool wireframe = false;
 		bool rawMouseSupported = false;
-		bool backfaceCulling = true;
+		bool backfaceCulling = false;
 		
 		void scanSystemConfig()
 		{

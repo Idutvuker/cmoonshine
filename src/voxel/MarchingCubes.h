@@ -5,215 +5,207 @@
 #include "MCTables.h"
 #include "../util/geometry.h"
 
-template<typename T, int sizeX, int sizeY, int sizeZ>
-void preMarchingCubes(
-		const Buffer3<T, sizeX, sizeY, sizeZ> &grid,
-		T isolevel,
-		std::vector<int> &indices,
-		const ivec3 &from,
-		const ivec3 &to)
+namespace MarchingCubes
 {
-	using namespace MCTABLES;
-	
-	T values[8];
-	
-	for (int x = from.x; x < to.x; x++) {
-		for (int y = from.y; y < to.y; y++) {
-			for (int z = from.z; z < to.z; z++)
-			{
-				int bits = 0;
-				int power = 1;
-				
-				
-				for (int i = 0; i < 8; i++)
-				{
-					ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[i];
-					values[i] = grid(vox.x, vox.y, vox.z);
-					//Log::d(values[i]);
-					if (values[i] < isolevel)
-						bits |= power;
-					
-					power <<= 1;
-				}
-				
-				int edges = EDGE_TABLE[bits];
-				
-				if (edges == 0)
-					continue;
-				
-				indices.push_back(grid.rawId(x, y, z));
-				
-			}
-		}
-	}
-}
 
-
-
-
-
-template <int sizeY, int sizeZ>
-void packLayer(VoxVertex cache[sizeY][sizeZ][3], int xLayer, PackedVoxVertex vertices[])
-{
-	for (int y = 0; y < sizeY; y++)
-		for (int z = 0; z < sizeZ; z++)
-		{
-			vertices[y * sizeY + z] = cache[y][z][].pack();
-		}
-}
-
-
-template <typename T>
-float interp(T val1, T val2, T isolevel)
-{
-	return (isolevel - val1)/((float)(val2 - val1));
-}
-
-template<typename T, int sizeX, int sizeY, int sizeZ>
-uint32 marchingCubes(
-		const Buffer3<T, sizeX, sizeY, sizeZ> &grid,
-		T isolevel,
-		PackedVoxVertex vertices[],
-		Terrain * terrain,
-		const ivec3 &from,
-		const ivec3 &to)
-{
-	using namespace MCTABLES;
-	
-	VoxVertex cache[2][sizeY][sizeZ][3];
-	
-	uint32 indCount = 0;
-	
-	T values[8];
-	
-	struct VoxCoord{
-		ivec3 pos;
-		int dir;
-	} voxCoord[12];
-	
-	for (int x = from.x; x < to.x; x++)
+	template <typename T>
+	float interp(T val1, T val2, T isolevel)
 	{
-		for (int y = from.y; y < to.y - 1; y++)
+		return (isolevel - val1)/((float)(val2 - val1));
+	}
+	
+	template<typename T, int sizeX, int sizeY, int sizeZ>
+	void preMarchingCubes(
+			const Buffer3<T, sizeX, sizeY, sizeZ> &grid,
+			T isolevel,
+			std::vector<uint32> &indices,
+			const ivec3 &from,
+			const ivec3 &to)
+	{
+		using namespace MCTABLES;
+		
+		T values[8];
+		
+		int EDGE_OFFSET[12] = {
+				0,			3 * sizeZ * sizeY + 1,				3,							1,
+				3 * sizeZ,	3 * sizeZ * sizeY + 3 * sizeZ + 1,	3 * sizeZ + 3,				3 * sizeZ + 1,
+				2,			3 * sizeZ * sizeY + 2,				3 * sizeZ * sizeY + 3 + 2,	3 + 2
+		};
+		
+		static VoxVertex cache[sizeX][sizeY][sizeZ][3] = {};
+		
+		
+		for (int x = 0; x < sizeX; x++)
+			for (int y = 0; y < sizeY; y++)
+				for (int z = 0; z < sizeZ; z++)
+					for (int k = 0; k < 3; k++)
+						cache[x][y][z][k].edgePos = 0;
+		
+		
+		vec3 vertPos[12];
+		for (int i = 0; i < 12; i++)
+			vertPos[i] = vec3(0, 0, 0);
+		
+		for (int x = from.x; x < to.x; x++)
 		{
-			if (x == to.x - 1)
-				break;
-			for (int z = from.z; z < to.z - 1; z++)
+			for (int y = from.y; y < to.y; y++)
 			{
-				
-				int bits = 0;
-				int power = 1;
-				
-				
-				for (int i = 0; i < 8; i++) {
-					ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[i];
-					values[i] = grid(vox.x, vox.y, vox.z);
+				if (x == to.x)
+					break;
+				for (int z = from.z; z < to.z; z++)
+				{
+					int bits = 0;
+					int power = 1;
 					
-					if (values[i] < isolevel)
-						bits |= power;
 					
-					power <<= 1;
-				}
-				
-				int edges = EDGE_TABLE[bits];
-				
-				if (edges == 0)
-					continue;
-				
-				power = 1;
-				
-				for (int i = 0; i < 12; i++) {
-					if (edges & power) {
-						int v1 = EDGE_ORDER[i * 2];
-						int v2 = EDGE_ORDER[i * 2 + 1];
+					for (int i = 0; i < 8; i++)
+					{
+						ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[i];
+						values[i] = grid(vox.x, vox.y, vox.z);
+						//Log::d(values[i]);
+						if (values[i] < isolevel)
+							bits |= power;
 						
-						ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[v1];
-						uint32 index = 3 * grid.rawId(vox) + EDGE_DIR[i];
+						power <<= 1;
+					}
+					
+					int edges = EDGE_TABLE[bits];
+					
+					if (edges == 0)
+						continue;
 						
-						
-						if (!EDGE_CACHED[i] ||
-							(x == 0 && (i == 3 || i == 8 || i == 7 || i == 11)) ||    // left cube face
-							(y == 0 && (i == 0 || i == 1 || i == 2 || i == 3)) ||    // bottom cube face
-							(z == 0 && (i == 0 || i == 9 || i == 4 || i == 8)))        // front cube face)
+					uint32 id = grid.rawId(x, y, z);
+					indices.push_back(id);
+					glBufferSubData(GL_ARRAY_BUFFER, id * sizeof(GLint), sizeof(GLint), &bits);
+					
+					
+					power = 1;
+					
+					for (int i = 0; i < 12; i++)
+					{
+						if (edges & power)
 						{
-							cache[vox.x % 2][vox.y][vox.z][EDGE_DIR[i]].edgePos = interp(values[v1], values[v2], isolevel);
+							int v1 = EDGE_ORDER[i * 2];
+							int v2 = EDGE_ORDER[i * 2 + 1];
+							
+							ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[v1];
+							uint32 index = 3 * grid.rawId(vox) + EDGE_DIR[i];
+							
+							
+							if (!EDGE_CACHED[i] ||
+								(x == 0 && (i == 3 || i == 8 || i == 7 || i == 11)) ||    // left cube face
+								(y == 0 && (i == 0 || i == 1 || i == 2 || i == 3)) ||    // bottom cube face
+								(z == 0 && (i == 0 || i == 9 || i == 4 || i == 8)))        // front cube face)
+							{
+								float alpha = interp(values[v1], values[v2], isolevel);
+								VoxVertex &vert = cache[vox.x][vox.y][vox.z][EDGE_DIR[i]];
+								vert.edgePos = alpha;
+								
+								//Log::d("Write to ", index, to_string(vox));
+								
+								vertPos[i] = vox;
+								
+								if (EDGE_DIR[i] == 0)
+									vertPos[i].x += alpha;
+								else if (EDGE_DIR[i] == 1)
+									vertPos[i].z += alpha;
+								else
+									vertPos[i].y += alpha;
+								
+								//Log::d("f", to_string(vertPos[i]), i, EDGE_DIR[i]);
+							}
 						}
 						
-						voxCoord[i].pos = vox;
-						voxCoord[i].dir = EDGE_DIR[i];
-					}
-					
-					power <<= 1;
-				}
-				
-				
-				int i = 0;
-				
-				while (TRI_TABLE[bits][i] != -1)
-				{
-					int ind1 = TRI_TABLE[bits][i];
-					int ind2 = TRI_TABLE[bits][i + 1];
-					int ind3 = TRI_TABLE[bits][i + 2];
-					
-					VoxCoord vc[3] {
-							voxCoord[ind1],
-							voxCoord[ind2],
-							voxCoord[ind3]
-					};
-					
-					//Log::d(x, y, z);
-					
-					VoxVertex * vert[3];
-					uint32 ind[3];
-					vec3 pos[3];
-					
-					std::vector<GLuint> * indices = terrain->getChunkFromCoord(x, y, z);
-					for (int j = 0; j < 3; j++)
-					{
-						vert[j] = &cache[vc[j].pos.x % 2][vc[j].pos.y][vc[j].pos.z][vc[j].dir];
-						indices->push_back(3 * grid.rawId(vc[j].pos) + vc[j].dir);
-						
-						pos[j] = vc[j].pos;
-						if (vc[j].dir == 0)
-							pos[j].x += vert[j]->edgePos;
-						
-						else if (vc[j].dir == 1)
-							pos[j].z += vert[j]->edgePos;
-						
-						else
-							pos[j].y += vert[j]->edgePos;
-						
-					}
-					
-					vec3 normal = geometry::calculateNormal(pos[0], pos[1], pos[2]);
-					
-					for (int j = 0; j< 3; j++)
-					{
-						vert[j]->normal += normal;
-						
-						//Log::d(to_string(vert[j]->normal));
+						power <<= 1;
 					}
 					
 					
-					i += 3;
-				}
-				
-			} // for z
-		} // for y
-		
-		for (int y = 0; y < sizeY; y++)
-			for (int z = 0; z < sizeZ; z++)
-				for (int edge_dir = 0; edge_dir < 3; edge_dir++)
-				{
-					uint32 index = 3 * grid.rawId(x, y, z) + edge_dir;
-					VoxVertex * vert = &cache[x % 2][y][z][edge_dir];
-					
-					vertices[index] = vert->pack();
-					vert->normal = vec3(0, 0, 0);
-				}
-		
-	} // for x
+					int i = 0;
 	
-	return indCount;
+					while (TRI_TABLE[bits][i] != -1)
+					{
+						int ind[3] = {
+							TRI_TABLE[bits][i],
+							TRI_TABLE[bits][i + 1],
+							TRI_TABLE[bits][i + 2]
+						};
+	
+						int dir[3];
+						ivec3 vox[3];
+						vec3 pos[3];
+						VoxVertex * vert[3];
+						
+						//Log::d("TRIANGLE", i / 3, x, y, z, "edges:", ind[0], ind[1], ind[2]);
+						for (int j = 0; j < 3; j++)
+						{
+							dir[j] = EDGE_DIR[ind[j]];
+							vox[j] = ivec3(x, y, z) + VOXEL_POSITION[EDGE_ORDER[2 * ind[j]]];
+							pos[j] = vox[j];
+							
+							
+							
+							vert[j] = &cache[vox[j].x][vox[j].y][vox[j].z][dir[j]];
+							
+							float alpha = vert[j]->edgePos;
+							pos[j][XZYtoXYZ[EDGE_DIR[ind[j]]]] += alpha;
+	//						if (EDGE_DIR[i] == 0)
+	//							pos[j].x += alpha;
+	//						else if (EDGE_DIR[i] == 1)
+	//							pos[j].z += alpha;
+	//						else
+	//							pos[j].y += alpha;
+							
+							if (pos[j] == vec3(0, 0, 0))
+							{
+								int index = 3 * grid.rawId(vox[j]) + EDGE_DIR[i];
+								//Log::d("zero", ind[j], alpha, index);
+							}
+						}
+						
+						
+						vec3 normal = geometry::calculateNormal(pos[0], pos[1], pos[2]);
+						//Log::d("Normal", to_string(normal), to_string(pos[0]), to_string(pos[1]), to_string(pos[2]));
+						for (int j = 0; j < 3; j++)
+						{
+							//Log::d(to_string(pos[j]), to_string(vox[j]));
+							//Log::d(to_string(normal));
+							vert[j]->normal += normal;
+							
+							//Log::d(to_string(vert[j]->normal));
+						}
+	
+	
+						i += 3;
+					}
+					
+					
+				}//for z
+			}// for y
+		}// for x
+		
+		for (int x = from.x; x < to.x; x++)
+			for (int y = from.y; y < to.y; y++)
+				for (int z = from.z; z < to.z; z++)
+				{
+					for (int i = 0; i < 12; i++)
+					{
+						if (!EDGE_CACHED[i])
+						//	Log::d(to_string(vert->normal));
+						{
+							int v1 = EDGE_ORDER[i * 2];
+							
+							
+							ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[v1];
+							uint32 index = 3 * grid.rawId(vox) + EDGE_DIR[i];
+							VoxVertex *vert = &cache[vox.x][vox.y][vox.z][EDGE_DIR[i]];
+							
+							
+							
+							uint32 packed = vert->pack();
+							glBufferSubData(GL_TEXTURE_BUFFER, (index) * sizeof(GLuint), sizeof(GLuint), &packed);
+							vert->normal = vec3(0, 0, 0);
+						}
+					}
+				}
+	}
 }
-
-

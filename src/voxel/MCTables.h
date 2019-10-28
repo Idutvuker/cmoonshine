@@ -5,6 +5,8 @@
 
 namespace MCTABLES
 {
+	const int XZYtoXYZ[3] = {0, 2, 1};
+	
 	
 	const ivec3 VOXEL_POSITION[] = {
 			ivec3(0, 0, 0),

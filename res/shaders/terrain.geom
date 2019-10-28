@@ -1,14 +1,5 @@
 
 
-layout (points) in;
-layout (triangle_strip, max_vertices = 15) out;
-
-uniform mat4 ModelViewProjMat;
-uniform samplerBuffer data;
-//uniform isamplerBuffer TRI_TABLE;
-
-const float isolevel = ISOLEVEL;
-
 const int EDGE_TABLE[256] = int[](
 0x0, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
 0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -301,7 +292,7 @@ const uint TRI_TABLE[512] = uint[](
 0x038ddddd, 0xdddddddd,
 0xdddddddd, 0xdddddddd);
 
-const vec3 VOXEL_POSITION[] = vec3[](
+const vec3 VOXEL_POSITION[8] = vec3[](
     vec3(0, 0, 0),
     vec3(1, 0, 0),
     vec3(1, 0, 1),
@@ -313,7 +304,7 @@ const vec3 VOXEL_POSITION[] = vec3[](
     vec3(0, 1, 1)
 );
 
-const int EDGE_ORDER[] = int[](
+const int EDGE_ORDER[12 * 2] = int[](
     0, 1,
     1, 2,
     3, 2,
@@ -330,10 +321,15 @@ const int EDGE_ORDER[] = int[](
     3, 7
 );
 
+const int EDGE_OFFSET[12] = int[](
+    0,      3*DIMZ*DIMY+1,          3,                  1,
+    3*DIMZ, 3*DIMZ*DIMY+3*DIMZ+1,   3*DIMZ+3,           3*DIMZ+1,
+    2,      3*DIMZ*DIMY+2,          3*DIMZ*DIMY+3+2,    3+2
+);
 
-int getI(in int x, in int y, in int z)
+int getI(in int x, in int y, in int z, int edge)
 {
-    return x * DIMZ * DIMY + y * DIMZ + z;
+    return 3 * int(x * DIMZ * DIMY + y * DIMZ + z) + EDGE_OFFSET[edge];
 }
 
 uint triTable(in int row, in int column)
@@ -342,7 +338,31 @@ uint triTable(in int row, in int column)
     return (TRI_TABLE[row * 2 + column / 8] >> uint(28 - cm8 * 4)) & uint(15);
 }
 
+layout (points) in;
+layout (triangle_strip, max_vertices = 15) out;
+
+uniform mat4 ModelViewProjMat;
+uniform usamplerBuffer data;
+
+const float isolevel = ISOLEVEL;
+in int gs_bits[];
+
 out vec3 _normal;
+
+void unpackVertex(in uint vert, out float alpha, out vec3 normal)
+{
+    uint epos = vert >> 24;
+    alpha = epos / 255.f;
+
+    float nx = (vert >> uint(11) & uint(2047)) / 1023.f - 1.f;
+    float ny = (vert & uint(2047)) / 1023.f - 1.f;
+    bool n_neg_z = ((vert & uint(1 << 23)) != uint(0));
+    float nz = sqrt(1.f - min(nx * nx + ny * ny, 1.f));
+    if (n_neg_z)
+        nz *= -1.f;
+
+    normal = vec3(nx, ny, nz);
+}
 
 void main()
 {
@@ -351,32 +371,13 @@ void main()
     int y = int(pos.y + 0.5);
     int z = int(pos.z + 0.5);
 
-    float values[8] = float[](
-        texelFetch(data, getI(x,    y,      z)).r,
-        texelFetch(data, getI(x+1,  y,      z)).r,
-        texelFetch(data, getI(x+1,  y,      z+1)).r,
-        texelFetch(data, getI(x,    y,      z+1)).r,
-
-        texelFetch(data, getI(x,    y+1,    z)).r,
-        texelFetch(data, getI(x+1,  y+1,    z)).r,
-        texelFetch(data, getI(x+1,  y+1,    z+1)).r,
-        texelFetch(data, getI(x,    y+1,    z+1)).r
-    );
-
     vec3 vertices[12];
+    vec3 normals[12];
 
-    int bits = 0;
+    int bits = gs_bits[0];
     int power = 1;
-    for (int i = 0; i < 8; ++i)
-    {
-        if (values[i] < isolevel)
-            bits |= power;
-        power <<= 1;
-    }
 
     int edges = EDGE_TABLE[bits];
-    if (edges == 0)
-        return;
 
 
     power = 1;
@@ -388,11 +389,17 @@ void main()
             int v1 = EDGE_ORDER[i * 2];
             int v2 = EDGE_ORDER[i * 2 + 1];
 
-            vertices[i] = mix(VOXEL_POSITION[v1], VOXEL_POSITION[v2], (isolevel - values[v1]) / (values[v2] - values[v1]));
+            int id = getI(x, y, z, i);
+            float alpha;
+
+            unpackVertex(texelFetch(data, id).r, alpha, normals[i]);
+
+            vertices[i] = mix(VOXEL_POSITION[v1], VOXEL_POSITION[v2], alpha);
         }
 
         power <<= 1;
     }
+
 
     uint triT1 = TRI_TABLE[bits * 2];
     uint triT2 = TRI_TABLE[bits * 2 + 1];
@@ -403,6 +410,7 @@ void main()
 
     for (int i = 0; i < 8; i++)
         triangles[8 + i] = (triT2 >> uint(28 - i * 4)) & uint(15);
+
 
 
     int i = 0;
@@ -419,14 +427,16 @@ void main()
         vec3 tmp1 = v2 - v1;
         vec3 tmp2 = v3 - v1;
 
-        _normal = normalize(cross(tmp1, tmp2));
-
+        //_normal = normalize(cross(tmp1, tmp2));
+        _normal = normals[i1];
         gl_Position = ModelViewProjMat * (pos + vec4(v1, 0));
         EmitVertex();
 
+        _normal = normals[i2];
         gl_Position = ModelViewProjMat * (pos + vec4(v2, 0));
         EmitVertex();
 
+        _normal = normals[i3];
         gl_Position = ModelViewProjMat * (pos + vec4(v3, 0));
         EmitVertex();
 

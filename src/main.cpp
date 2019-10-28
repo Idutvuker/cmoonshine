@@ -13,7 +13,8 @@
 Renderer *renderer;
 Timer *timer;
 Node *root;
-Spatial *rotor;
+Spatial *emp2;
+Spatial *emp1;
 FlyCamera *camera;
 Terrain *terrain;
 
@@ -47,7 +48,9 @@ void process(float delta)
 {
 	using namespace Engine;
 	camera->update(delta);
-	//rotor->transform = rotate(rotor->transform, delta, vec3(0, 0, 1));
+	
+	emp1->transform = rotate(emp1->transform, delta, vec3(1, 1, 0));
+	//emp2->transform = rotate(emp2->transform, delta, vec3(0, 0, 1));
 	
 	
 	int state = window->getMouseButton(GLFW_MOUSE_BUTTON_LEFT);
@@ -96,29 +99,32 @@ void quit()
 
 int main()
 {
-	Engine::init(700, 700, "moonshine");
+	Engine::init(700, 500, "moonshine");
 	using Engine::window;
 	
 	MaterialManager::init();
 	
-	
-	
 	renderer = new Renderer();
-	
 	timer = new Timer();
 	
 	root = new Node();
 	root->name = "ROOT";
 	
-	rotor = new Spatial();
-	rotor->autoName();
-	rotor->transform = translate(rotor->transform, vec3(0, 0, -4));
-	root->addChild(rotor);
+	ModelLoader::load("res/models/plane.obj", root, MaterialManager::defaultMaterial, 10.f);
+	
+	emp1 = new Spatial();
+	emp1->transform = translate(emp1->transform, vec3(-7, 3, -3));
+	root->addChild(emp1);
+	
+	emp2 = new Spatial();
+	emp2->transform = translate(emp2->transform, vec3(0, 2, 0));
+	emp1->addChild(emp2);
 	
 	terrain = new Terrain();
 	root->addChild(terrain);
 	
-	ModelLoader::load("res/models/cube.obj", rotor, MaterialManager::defaultMaterial, 0.1f);
+	ModelLoader::load("res/models/monkey2.obj", emp1, MaterialManager::defaultMaterial, 1.f);
+	ModelLoader::load("res/models/teapot2.obj", emp2, MaterialManager::defaultMaterial, 0.5f);
 	
 	camera = new FlyCamera(1.1f, window->getWidth(), window->getHeight());
 	camera->name = "Camera";

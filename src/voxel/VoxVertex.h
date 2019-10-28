@@ -27,11 +27,6 @@ struct VoxVertex
 		
 		uint32_t pos = (uint32_t)(edgePos * 255.f + 0.5f);
 		
-//		PackedVoxVertex res =
-//							(pos << 24) +
-//							(n_x << 16) +
-//							(n_y << 8) +
-//							(n_z);
 		
 		uint32_t n_neg_z = signbit(normal.z);
 
