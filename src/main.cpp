@@ -64,9 +64,6 @@ void process(float delta)
 	if (Input::keyJustPressed(GLFW_KEY_Q))
 		picking(-1.0f);
 	
-	if (Input::keyJustPressed(GLFW_KEY_SPACE))
-	{}
-	
 	prevState = state;
 }
 
@@ -99,7 +96,7 @@ void quit()
 
 int main()
 {
-	Engine::init(800, 800, "moonshine");
+	Engine::init(600, 400, "moonshine");
 	using Engine::window;
 	
 	MaterialManager::init();

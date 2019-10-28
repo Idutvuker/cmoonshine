@@ -17,7 +17,8 @@ public:
 
 	const double sensitivity = 0.001;
 	const float flySpeed = 5.0f;
-
+	
+	bool mouseLook = true;
 
 	mat4 pitchMat = IDENTITY_MATRIX;
 	mat4 yawMat = IDENTITY_MATRIX;

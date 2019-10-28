@@ -35,25 +35,26 @@ namespace MarchingCubes
 		static VoxVertex cache[sizeX][sizeY][sizeZ][3] = {};
 		
 		
-		for (int x = 0; x < sizeX; x++)
-			for (int y = 0; y < sizeY; y++)
-				for (int z = 0; z < sizeZ; z++)
-					for (int k = 0; k < 3; k++)
-						cache[x][y][z][k].edgePos = 0;
+//		for (int x = from.x; x <= sizeX; x++)
+//			for (int y = 0; y < sizeY; y++)
+//				for (int z = 0; z < sizeZ; z++)
+//					for (int k = 0; k < 3; k++)
+//						cache[x][y][z][k].normal = vec3(0, 0, 0);
 		
 		
 		vec3 vertPos[12];
-		for (int i = 0; i < 12; i++)
-			vertPos[i] = vec3(0, 0, 0);
+		//for (int i = 0; i < 12; i++)
+		//	vertPos[i] = vec3(0, 0, 0);
 		
 		for (int x = from.x; x < to.x; x++)
 		{
 			for (int y = from.y; y < to.y; y++)
 			{
-				if (x == to.x)
-					break;
 				for (int z = from.z; z < to.z; z++)
 				{
+					
+					
+					
 					int bits = 0;
 					int power = 1;
 					
@@ -100,7 +101,7 @@ namespace MarchingCubes
 								float alpha = interp(values[v1], values[v2], isolevel);
 								VoxVertex &vert = cache[vox.x][vox.y][vox.z][EDGE_DIR[i]];
 								vert.edgePos = alpha;
-								
+								vert.normal = vec3(0, 0, 0);
 								//Log::d("Write to ", index, to_string(vox));
 								
 								vertPos[i] = vox;
@@ -189,9 +190,9 @@ namespace MarchingCubes
 				{
 					for (int i = 0; i < 12; i++)
 					{
-						if (!EDGE_CACHED[i])
+						//if (!EDGE_CACHED[i])
 						//	Log::d(to_string(vert->normal));
-						{
+						//{
 							int v1 = EDGE_ORDER[i * 2];
 							
 							
@@ -203,8 +204,8 @@ namespace MarchingCubes
 							
 							uint32 packed = vert->pack();
 							glBufferSubData(GL_TEXTURE_BUFFER, (index) * sizeof(GLuint), sizeof(GLuint), &packed);
-							vert->normal = vec3(0, 0, 0);
-						}
+							//vert->normal = vec3(0, 0, 0);
+						//}
 					}
 				}
 	}

@@ -34,7 +34,7 @@ void Terrain::change(vec3 pos, float val)
 				
 				uint id = grid.rawId(ex, ey, ez);
 				//if (grid[id] > -4.f)
-				grid[id] += (sqrtf(3*r*r) - len) * val;
+				grid[id] += max(0.7f + r - len, 0.f) * val;
 			}
 	
 	

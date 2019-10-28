@@ -3,7 +3,7 @@
 in vec3 _normal;
 out vec4 color;
 
-const vec3 light_dir = normalize(vec3(1, 1, 1));
+const vec3 light_dir = normalize(vec3(1, 6, 0.8));
 
 void main()
 {

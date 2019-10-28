@@ -59,6 +59,22 @@ void FlyCamera::update(float delta) {
 	if (window->isKeyPressed(GLFW_KEY_LEFT_SHIFT))
 		speedMult = 2.f;
 	
+	if (Input::keyJustPressed(GLFW_KEY_SPACE))
+	{
+		if (mouseLook)
+		{
+			window->setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+			window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+		else
+		{
+			window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			if (Configuration::rawMouseSupported)
+				window->setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		}
+		
+		mouseLook ^= true;
+	}
 	
 	if (moveVec != vec3(0, 0, 0))
 	{
