@@ -7,7 +7,7 @@ Core profile OpenGL graphics engine with forward rendering pipeline
 
 ## Features
 - Smooth voxel terrain
-- Fast update of local changes in terrain regardless of its size
+- Fast update of local terrain changes regardless of terrain size
 - Scene graph
 - Loading .obj models
 - Fly camera
