@@ -14,7 +14,7 @@ class Terrain : public Drawable
 private:
 	
 	static const int dimX = 64;
-	static const int dimY = 32;
+	static const int dimY = 64;
 	static const int dimZ = 64;
 	
 	//PackedVoxVertex vertices[3 * dimX * dimY * dimZ];
@@ -42,6 +42,8 @@ private:
 	void addToBuffer(const std::vector<uint32> &vec);
 	void deleteFromBuffer(const ivec3 &from, const ivec3 &to);
 	
+	bool smoothShading = true;
+	
 public:
 	const float isolevel = -0.35f;
 	
@@ -54,6 +56,8 @@ public:
 	Terrain();
 	
 	virtual ~Terrain() override;
+	
+	void switchShading();
 };
 
 

@@ -40,6 +40,14 @@ Renderer::Renderer(int maxHeight) :
 	glViewport(0, 0, window->getWidth(), window->getHeight());
 	glEnable(GL_DEPTH_TEST);
 	
+	updateConfiguration();
+	
+	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+}
+
+void Renderer::updateConfiguration()
+{
+	using namespace Engine;
 	if (Configuration::backfaceCulling)
 	{
 		glCullFace(GL_BACK);
@@ -51,8 +59,10 @@ Renderer::Renderer(int maxHeight) :
 	
 	if (Configuration::wireframe)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
-	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 void Renderer::renderWorld(Node *root) {

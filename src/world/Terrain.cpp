@@ -4,6 +4,12 @@
 
 #define MACRO_BUFFER_OFFSET(idx) (static_cast<char*>(0) + (idx))
 
+void Terrain::switchShading()
+{
+	smoothShading ^= true;
+	material->setShaderUniform("smoothShading", smoothShading);
+}
+
 void Terrain::change(vec3 pos, float val, float radius)
 {
 	int x = (int)(pos.x + 0.5f);
@@ -34,10 +40,12 @@ void Terrain::change(vec3 pos, float val, float radius)
 				
 				uint id = grid.rawId(ex, ey, ez);
 				
-				float factor = min(max(0.4f + radius - len, 0.f), 2.f);
-				
+				float factor = min(max(0.4f + radius - len, 0.f), 1.7f);
 				
 				grid[id] += factor * val;
+				
+				if (val > 0 && grid[id] > isolevel - 0.05f && grid[id] < isolevel)
+					grid[id] = isolevel + 0.005;
 			}
 	
 	

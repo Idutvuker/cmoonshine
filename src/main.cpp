@@ -65,13 +65,22 @@ void process(float delta)
 		picking(-delta);
 	
 	if (Input::keyJustPressed(GLFW_KEY_Q))
-		picking(-1.0f);
+	{
+		Configuration::wireframe ^= true;
+		renderer->updateConfiguration();
+	}
+	
+	if (Input::keyJustPressed(GLFW_KEY_E))
+	{
+		terrain->switchShading();
+	}
 	
 	if (Input::keyPressed(GLFW_KEY_1))
-		radius += 2 * delta;
+		radius += 4 * delta;
 	
-	if (Input::keyPressed(GLFW_KEY_2)) {
-		radius -= 2 * delta;
+	if (Input::keyPressed(GLFW_KEY_2))
+	{
+		radius -= 4 * delta;
 		if (radius < 0)
 			radius = 0;
 	}
@@ -108,7 +117,7 @@ void quit()
 
 int main()
 {
-	Engine::init(1200, 700, "moonshine");
+	Engine::init(600, 400, "moonshine");
 	using Engine::window;
 	
 	MaterialManager::init();

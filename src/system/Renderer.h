@@ -27,4 +27,6 @@ public:
 	Renderer(int maxHeight = 40);
 
 	void renderWorld(Node *root);
+	
+	void updateConfiguration();
 };
