@@ -13,9 +13,9 @@ class Terrain : public Drawable
 	MACRO_NODE_DECL();
 private:
 	
-	static const int dimX = 32;
+	static const int dimX = 64;
 	static const int dimY = 32;
-	static const int dimZ = 32;
+	static const int dimZ = 64;
 	
 	//PackedVoxVertex vertices[3 * dimX * dimY * dimZ];
 	
@@ -43,11 +43,11 @@ private:
 	void deleteFromBuffer(const ivec3 &from, const ivec3 &to);
 	
 public:
-	const float isolevel = -0.5f;
+	const float isolevel = -0.35f;
 	
 	
 	
-	void change(vec3 pos, float val);
+	void change(vec3 pos, float val, float radius);
 	
 	
 	virtual void draw(const RenderContext &context) override;

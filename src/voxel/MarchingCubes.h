@@ -33,13 +33,7 @@ namespace MarchingCubes
 		};
 		
 		static VoxVertex cache[sizeX][sizeY][sizeZ][3] = {};
-		
-		
-//		for (int x = from.x; x <= sizeX; x++)
-//			for (int y = 0; y < sizeY; y++)
-//				for (int z = 0; z < sizeZ; z++)
-//					for (int k = 0; k < 3; k++)
-//						cache[x][y][z][k].normal = vec3(0, 0, 0);
+		//Log::d(sizeof(cache));
 		
 		
 		vec3 vertPos[12];
@@ -188,17 +182,19 @@ namespace MarchingCubes
 			for (int y = from.y; y < to.y; y++)
 				for (int z = from.z; z < to.z; z++)
 				{
-					for (int i = 0; i < 12; i++)
+					for (int i = 0; i < 3; i++)
 					{
-						//if (!EDGE_CACHED[i])
-						//	Log::d(to_string(vert->normal));
-						//{
-							int v1 = EDGE_ORDER[i * 2];
+						if (
+								((i == 1 || i == 2) && x == from.x) ||
+								((i == 0 || i == 1) && y == from.y) ||
+								((i == 0 || i == 2) && z == from.z))
+							continue;
+				
 							
 							
-							ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[v1];
-							uint32 index = 3 * grid.rawId(vox) + EDGE_DIR[i];
-							VoxVertex *vert = &cache[vox.x][vox.y][vox.z][EDGE_DIR[i]];
+							//ivec3 vox = ivec3(x, y, z) + VOXEL_POSITION[v1];
+							uint32 index = 3 * grid.rawId(x, y, z) + i;
+							VoxVertex *vert = &cache[x][y][z][i];
 							
 							
 							

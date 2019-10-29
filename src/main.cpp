@@ -18,6 +18,8 @@ Spatial *emp1;
 FlyCamera *camera;
 Terrain *terrain;
 
+float radius = 3;
+
 void picking(float val)
 {
 	int x = Engine::window->getWidth() / 2;
@@ -33,9 +35,10 @@ void picking(float val)
 		
 		t = inverse(camera->projMat) * t;
 		t = camera->transform * t;
+		t = inverse(terrain->transform) * t;
 		
 		vec3 r = vec3(t) / t.w;
-		terrain->change(r, val);
+		terrain->change(r, val, radius);
 		
 		//rotor->transform = translate(IDENTITY_MATRIX, r);
 	}
@@ -63,6 +66,15 @@ void process(float delta)
 	
 	if (Input::keyJustPressed(GLFW_KEY_Q))
 		picking(-1.0f);
+	
+	if (Input::keyPressed(GLFW_KEY_1))
+		radius += 2 * delta;
+	
+	if (Input::keyPressed(GLFW_KEY_2)) {
+		radius -= 2 * delta;
+		if (radius < 0)
+			radius = 0;
+	}
 	
 	prevState = state;
 }
@@ -96,7 +108,7 @@ void quit()
 
 int main()
 {
-	Engine::init(600, 400, "moonshine");
+	Engine::init(1200, 700, "moonshine");
 	using Engine::window;
 	
 	MaterialManager::init();
@@ -118,6 +130,8 @@ int main()
 	emp1->addChild(emp2);
 	
 	terrain = new Terrain();
+	terrain->transform = translate(scale(IDENTITY_MATRIX, vec3(0.3f, 0.3f, 0.3f)), vec3(-32, -1, -32));
+	//terrin->transform = translate(terrain->transform, vec3(-3, 0, 0));
 	root->addChild(terrain);
 	
 	ModelLoader::load("res/models/monkey2.obj", emp1, MaterialManager::defaultMaterial, 1.f);

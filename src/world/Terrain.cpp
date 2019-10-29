@@ -4,7 +4,7 @@
 
 #define MACRO_BUFFER_OFFSET(idx) (static_cast<char*>(0) + (idx))
 
-void Terrain::change(vec3 pos, float val)
+void Terrain::change(vec3 pos, float val, float radius)
 {
 	int x = (int)(pos.x + 0.5f);
 	int y = (int)(pos.y + 0.5f);
@@ -14,7 +14,7 @@ void Terrain::change(vec3 pos, float val)
 		return;
 	
 	
-	const int r = 2;
+	int r = (int)(radius + 1.f);
 	
 	ivec3 from = ivec3(x - r, y - r, z - r);
 	ivec3 to = ivec3(x + r, y + r, z + r);
@@ -27,14 +27,17 @@ void Terrain::change(vec3 pos, float val)
 			for (int ez = from.z; ez < to.z; ez++)
 			{
 				//vec3 dr = vec3(ex, ey, ez);
-				float dx = (ex - pos.x);
-				float dy = (ey - pos.y);
-				float dz = (ez - pos.z);
+				float dx = ((float) ex - pos.x);
+				float dy = ((float) ey - pos.y);
+				float dz = ((float) ez - pos.z);
 				float len = sqrtf(dx*dx + dy*dy + dz*dz);
 				
 				uint id = grid.rawId(ex, ey, ez);
-				//if (grid[id] > -4.f)
-				grid[id] += max(0.7f + r - len, 0.f) * val;
+				
+				float factor = min(max(0.4f + radius - len, 0.f), 2.f);
+				
+				
+				grid[id] += factor * val;
 			}
 	
 	
@@ -106,24 +109,18 @@ void Terrain::draw(const RenderContext &context)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_BUFFER, buf_tex);
 	
-	//for (int i = 0; i < numIndices; i++)
-	//	Log::d(indices[i]);
-//	glActiveTexture(GL_TEXTURE1);
-//	glBindTexture(GL_TEXTURE_BUFFER, mc_tex);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	//glDrawArrays(GL_POINTS, 0, numIndices);
-	//glDrawArrays(GL_POINTS, 0, dimX * dimY * dimZ);
 	glDrawElements(GL_POINTS, numIndices, GL_UNSIGNED_INT, nullptr);
 	
 	glBindVertexArray(0);
 }
 
-Terrain::Terrain() {
+Terrain::Terrain()
+{
 	BaseMaterial::Definition def;
 	def.vertexShaderFilepath = "res/shaders/terrain.vert";
 	def.fragmentShaderFilepath = "res/shaders/terrain.frag";
 	def.geometryShaderFilepath = "res/shaders/terrain.geom";
-	glPointSize(10);
+	
 	def.defines = {
 			"DIMX " + std::to_string(dimX),
 			"DIMY " + std::to_string(dimY),
@@ -139,23 +136,7 @@ Terrain::Terrain() {
 		indices[i] = 0;
 	}
 	
-	//transform = translate(IDENTITY_MATRIX, vec3(-5, -5, -5));
-	
-	grid(1, 1, 1) = -1.f;
-//	grid(1, 1, 2) = -2.f;
-//
-//	grid(2, 2, 2) = -1.f;
-//	grid(1, 3, 1) = -4.f;
-//	grid(1, 2, 2) = -3.f;
-//	grid(2, 2, 2) = -3.f;
-//	grid(2, 3, 2) = -3.f;
-//	grid(2, 4, 2) = -3.f;
-//	grid(2, 5, 2) = -3.f;
-//	grid(2, 6, 2) = -3.f;
-//	grid(2, 7, 2) = -3.f;
-	
-	//ivec3(chunkSize));//
-	
+	//grid(32, 1, 32) = -1.f;
 	
 
 	glGenBuffers(1, &vbo);
