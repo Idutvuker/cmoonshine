@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include "Application.h"
 #include "Engine.h"
 
 void Renderer::recursiveRender(Node *node, int depth = 1) {

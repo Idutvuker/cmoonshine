@@ -8,6 +8,13 @@ const char * const BaseMaterial::DefUniformNames[] = {
 void BaseMaterial::prepare(const RenderContext &context) {
 	use();
 	
+	for (GLenum i = 0; i < (GLenum) textures.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textures[i]->texture);
+		glUniform1i(glGetUniformLocation(program, "tex"), 0);
+	}
+	
 	int loc;
 	
 	if ((loc = DefUniformLocations[ModelViewProjMat]) != -1)
@@ -33,6 +40,22 @@ void BaseMaterial::use() {
 	glUseProgram(program);
 }
 
+
+bool BaseMaterial::setTexture(const std::string &name, Texture *texture)
+{
+	int block = (int) textures.size();
+	if (setShaderUniform(name, block))
+	{
+		textures.push_back(texture);
+		return true;
+	}
+	else
+	{
+		//textures.push_back(nullptr);
+		Log::e("Texture", name, "not found");
+		return false;
+	}
+}
 
 
 BaseMaterial::BaseMaterial(const std::string &vertexShaderFilepath, const std::string &fragmentShaderFilepath,
@@ -79,6 +102,9 @@ BaseMaterial::BaseMaterial(const std::string &vertexShaderFilepath, const std::s
 	loadAttributes();
 	loadUniforms();
 }
+
+BaseMaterial::~BaseMaterial(){}
+
 
 void BaseMaterial::setUniform(GLint location, const mat4 &value) {
 	glUniformMatrix4fv(location, 1, false, value_ptr(value));
@@ -200,5 +226,21 @@ void BaseMaterial::loadUniforms()
 	}
 }
 
-BaseMaterial::~BaseMaterial(){}
+BaseMaterial::BaseMaterial(const BaseMaterial::Definition &def) :
+	BaseMaterial(
+		def.vertexShaderFilepath,
+		def.fragmentShaderFilepath,
+		def.geometryShaderFilepath,
+		def.defines)
+{}
+
+BaseMaterial::BaseMaterial(BaseMaterial *material) :
+	program(material->program)
+{
+	loadAttributes();
+	loadUniforms();
+}
+
+
+
 

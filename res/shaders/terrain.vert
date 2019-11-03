@@ -1,13 +1,15 @@
 
 
 uniform mat4 ModelViewProjMat;
-uniform mat4 ModelMat;
 
 const float scale = 1;
 
-layout (location = 0) in int bits;
+layout (location = 0) in int _bits;
 
-out int gs_bits;
+out VS_DATA
+{
+	int bits;
+} _out;
 
 
 float to_float(in uint a)
@@ -24,5 +26,5 @@ void main()
 
 	vec4 position = vec4(x, y, z, 1.0);
     gl_Position = position;
-	gs_bits = bits;
+	_out.bits = _bits;
 }

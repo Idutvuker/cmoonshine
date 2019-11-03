@@ -30,10 +30,10 @@ protected:
 	
 public:
 	
-	std::shared_ptr<BaseMaterial> material;
+	BaseMaterial *material;
 
-	Mesh(const std::vector<float> &vertices, const std::vector<int> &indices, std::shared_ptr<BaseMaterial> material);
-	Mesh(const std::vector<float> &vertices, std::shared_ptr<BaseMaterial> material);
+	Mesh(const std::vector<float> &vertices, const std::vector<int> &indices, BaseMaterial *material);
+	Mesh(const std::vector<float> &vertices, BaseMaterial *material);
 	
 	virtual ~Mesh() override;
 

@@ -1,5 +1,5 @@
 #include "Mesh.h"
-#include "../materials/MaterialManager.h"
+#include "../system/Assets.h"
 
 #include <utility>
 #include <gl/GL.h>
@@ -54,7 +54,7 @@ void Mesh::bufferData(const std::vector<VertexAttrib> &attribs)
 	glBindVertexArray(0);
 }
 
-Mesh::Mesh(const std::vector<float> &vertices, const std::vector<int> &indices, std::shared_ptr<BaseMaterial> material) :
+Mesh::Mesh(const std::vector<float> &vertices, const std::vector<int> &indices, BaseMaterial *material) :
 		vertices(vertices),
 		indices(indices),
 		indexed(true),
@@ -63,7 +63,7 @@ Mesh::Mesh(const std::vector<float> &vertices, const std::vector<int> &indices, 
 	bufferData(material->attribs);
 }
 
-Mesh::Mesh(const std::vector<float> &vertices, std::shared_ptr<BaseMaterial> material) :
+Mesh::Mesh(const std::vector<float> &vertices, BaseMaterial *material) :
 		vertices(vertices),
 		indexed(false),
 		material(material)

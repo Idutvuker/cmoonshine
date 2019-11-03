@@ -7,6 +7,7 @@
 #include "Window.h"
 #include "Configuration.h"
 #include "Input.h"
+#include "Assets.h"
 
 namespace Engine
 {
@@ -14,9 +15,9 @@ namespace Engine
 	
 	extern bool initialized;
 	
-	bool init(int windowWidth, int windowHeight, const char * title);
+	bool _init(int windowWidth, int windowHeight, const char * title);
 	
-	void quit();
+	void _quit();
 };
 
 

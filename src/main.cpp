@@ -4,8 +4,6 @@
 #include "util/Timer.h"
 #include "util/ModelLoader.h"
 #include "world/FlyCamera.h"
-#include "materials/SimpleMaterial.h"
-#include "materials/MaterialManager.h"
 #include "world/Terrain.h"
 
 #include <memory>
@@ -108,7 +106,7 @@ void loop()
 
 void quit()
 {
-	Engine::quit();
+	Engine::_quit();
 
 	delete timer;
 	delete renderer;
@@ -117,10 +115,9 @@ void quit()
 
 int main()
 {
-	Engine::init(600, 400, "moonshine");
-	using Engine::window;
-	
-	MaterialManager::init();
+	Engine::_init(600, 400, "moonshine");
+	using namespace Engine;
+	Assets::init();
 	
 	renderer = new Renderer();
 	timer = new Timer();
@@ -128,7 +125,7 @@ int main()
 	root = new Node();
 	root->name = "ROOT";
 	
-	ModelLoader::load("res/models/plane.obj", root, MaterialManager::defaultMaterial, 10.f);
+	ModelLoader::load("res/models/plane.obj", root, Assets::Materials::defaultM, 10.f);
 	
 	emp1 = new Spatial();
 	emp1->transform = translate(emp1->transform, vec3(-7, 3, -3));
@@ -140,11 +137,15 @@ int main()
 	
 	terrain = new Terrain();
 	terrain->transform = translate(scale(IDENTITY_MATRIX, vec3(0.3f, 0.3f, 0.3f)), vec3(-32, -1, -32));
-	//terrin->transform = translate(terrain->transform, vec3(-3, 0, 0));
 	root->addChild(terrain);
 	
-	ModelLoader::load("res/models/monkey2.obj", emp1, MaterialManager::defaultMaterial, 1.f);
-	ModelLoader::load("res/models/teapot2.obj", emp2, MaterialManager::defaultMaterial, 0.5f);
+	auto mat = new BaseMaterial(Assets::Materials::defaultM);
+	auto tx = new Texture("res/textures/default.png");
+	if (!mat->setTexture("tex", tx))
+		Log::e("Texture failed");
+	
+	ModelLoader::load("res/models/monkey2.obj", emp1, mat, 1.f);
+	ModelLoader::load("res/models/teapot2.obj", emp2, Assets::Materials::defaultM, 0.5f);
 	
 	camera = new FlyCamera(1.1f, window->getWidth(), window->getHeight());
 	camera->name = "Camera";

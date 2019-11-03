@@ -338,17 +338,7 @@ uint triTable(in int row, in int column)
     return (TRI_TABLE[row * 2 + column / 8] >> uint(28 - cm8 * 4)) & uint(15);
 }
 
-layout (points) in;
-layout (triangle_strip, max_vertices = 15) out;
 
-uniform mat4 ModelViewProjMat;
-uniform usamplerBuffer data;
-uniform bool smoothShading = true;
-
-const float isolevel = ISOLEVEL;
-in int gs_bits[];
-
-out vec3 _normal;
 
 void unpackVertex(in uint vert, out float alpha, out vec3 normal)
 {
@@ -365,6 +355,25 @@ void unpackVertex(in uint vert, out float alpha, out vec3 normal)
     normal = vec3(nx, ny, nz);
 }
 
+layout (points) in;
+layout (triangle_strip, max_vertices = 15) out;
+
+uniform mat4 ModelViewProjMat;
+uniform usamplerBuffer data;
+uniform bool smoothShading = true;
+
+in VS_DATA
+{
+    int bits;
+} _in[];
+
+out GS_DATA
+{
+    vec3 normal;
+} _out;
+
+const float isolevel = ISOLEVEL;
+
 void main()
 {
     vec4 pos = gl_in[0].gl_Position;
@@ -375,7 +384,7 @@ void main()
     vec3 vertices[12];
     vec3 normals[12];
 
-    int bits = gs_bits[0];
+    int bits = _in[0].bits;
     int power = 1;
 
     int edges = EDGE_TABLE[bits];
@@ -429,20 +438,20 @@ void main()
         vec3 tmp2 = v3 - v1;
 
         if (!smoothShading)
-            _normal = normalize(cross(tmp1, tmp2));
+            _out.normal = normalize(cross(tmp1, tmp2));
 
         if (smoothShading)
-            _normal = normals[i1];
+            _out.normal = normals[i1];
         gl_Position = ModelViewProjMat * (pos + vec4(v1, 0));
         EmitVertex();
 
         if (smoothShading)
-            _normal = normals[i2];
+            _out.normal = normals[i2];
         gl_Position = ModelViewProjMat * (pos + vec4(v2, 0));
         EmitVertex();
 
         if (smoothShading)
-            _normal = normals[i3];
+            _out.normal = normals[i3];
         gl_Position = ModelViewProjMat * (pos + vec4(v3, 0));
         EmitVertex();
 

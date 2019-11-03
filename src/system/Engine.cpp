@@ -17,13 +17,15 @@ namespace Engine
 	
 	
 	
-	void quit()
+	void _quit()
 	{
+		Assets::destroy();
 		delete window;
+		
 		glfwTerminate();
 	}
 	
-	bool init(int windowWidth, int windowHeight, const char *title)
+	bool _init(int windowWidth, int windowHeight, const char *title)
 	{
 		
 //		GLenum error = glGetError();

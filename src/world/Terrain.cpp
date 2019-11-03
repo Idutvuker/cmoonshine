@@ -1,5 +1,5 @@
 #include "Terrain.h"
-#include "../materials/MaterialManager.h"
+#include "../system/Assets.h"
 #include "../voxel/MarchingCubes.h"
 
 #define MACRO_BUFFER_OFFSET(idx) (static_cast<char*>(0) + (idx))
@@ -144,8 +144,11 @@ Terrain::Terrain()
 		indices[i] = 0;
 	}
 	
-	//grid(32, 1, 32) = -1.f;
-	
+//	for (int x = 0; x < dimX; x++)
+//		for (int y = 0; y < dimY; y++)
+//			for (int z = 0; z < dimZ; z++)
+//				grid(x, y, z) = (x % 2 == y % 2 == z % 2) ? isolevel + 0.1 : 0.f;
+//
 
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);

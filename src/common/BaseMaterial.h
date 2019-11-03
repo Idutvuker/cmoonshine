@@ -10,6 +10,7 @@
 #include "../util/glmath.h"
 #include "../system/RenderContext.h"
 #include "VertexAttrib.h"
+#include "Texture.h"
 
 #define MACRO_DEFUNIFORM_ENUM(DO) \
 	DO(ModelViewProjMat) \
@@ -32,7 +33,9 @@ private:
 		_ENUM_SIZE
 	};
 	#undef MACRO_MAKE_ENUM
-
+	
+	std::vector<Texture *> textures;
+	
 	static const char * const DefUniformNames[];
 	std::vector<GLint> DefUniformLocations = std::vector<GLint>(DefUniform::_ENUM_SIZE, -1);
 
@@ -70,13 +73,8 @@ public:
 	};
 	
 	
-	BaseMaterial(const Definition &def) :
-			BaseMaterial(
-					def.vertexShaderFilepath,
-					def.fragmentShaderFilepath,
-					def.geometryShaderFilepath,
-					def.defines)
-	{}
+	BaseMaterial(const Definition &def);
+	BaseMaterial(BaseMaterial *material);
 	
 	//VertexAttribSetup vertexAttribSetup;
 	std::vector<VertexAttrib> attribs;
@@ -87,15 +85,20 @@ public:
 	void prepare(const RenderContext &context);
 	
 	
+	bool setTexture(const std::string &name, Texture *texture);
+	
+	
 	template <typename T>
-	void setShaderUniform(const std::string name, const T &value)
+	bool setShaderUniform(const std::string &name, const T &value)
 	{
 		auto it = locTable.find(name);
 		if (it != locTable.end())
 		{
 			glUseProgram(program);
 			setUniform(it->second, value);
+			return true;
 		}
+		return false;
 	}
 	
 	virtual ~BaseMaterial();

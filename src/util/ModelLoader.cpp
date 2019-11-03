@@ -4,10 +4,10 @@
 #include "tiny_obj_loader.h"
 
 
-void ModelLoader::load(const std::string &path, Node *to, std::shared_ptr<BaseMaterial> material, float scale = 1.f)
+void ModelLoader::load(const std::string &path, Node *to, BaseMaterial* material, float scale = 1.f)
 {
 	bool normals = true;
-	bool texcoords = false;
+	bool texcoords = true;
 	
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -82,12 +82,13 @@ void ModelLoader::load(const std::string &path, Node *to, std::shared_ptr<BaseMa
 						//Log::d(shape.name, "Face tex coords are missing");
 					}
 					
-					else {
-						tinyobj::real_t u = attrib.normals[2 * id + 0];
-						tinyobj::real_t v = attrib.normals[2 * id + 1];
+					else
+					{
+						tinyobj::real_t tu = attrib.texcoords[2 * id + 0];
+						tinyobj::real_t tv = attrib.texcoords[2 * id + 1];
 						
-						vertices[p++] = u;
-						vertices[p++] = v;
+						vertices[p++] = tu;
+						vertices[p++] = tv;
 					}
 				}
 				

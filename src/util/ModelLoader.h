@@ -7,7 +7,7 @@
 class ModelLoader
 {
 public:
-	static void load(const std::string &path, Node *to, std::shared_ptr<BaseMaterial> material, float scale);
+	static void load(const std::string &path, Node *to, BaseMaterial* material, float scale);
 
 };
 
