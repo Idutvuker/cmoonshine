@@ -10,9 +10,12 @@ void BaseMaterial::prepare(const RenderContext &context) {
 	
 	for (GLenum i = 0; i < (GLenum) textures.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, textures[i]->texture);
-		glUniform1i(glGetUniformLocation(program, "tex"), 0);
+		if (textures[i] != nullptr)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, textures[i]->texture);
+			glUniform1i(glGetUniformLocation(program, "tex"), 0);
+		}
 	}
 	
 	int loc;
@@ -44,17 +47,21 @@ void BaseMaterial::use() {
 bool BaseMaterial::setTexture(const std::string &name, Texture *texture)
 {
 	int block = (int) textures.size();
-	if (setShaderUniform(name, block))
+	
+	auto it = locTable.find(name);
+	if (it != locTable.end())
 	{
-		textures.push_back(texture);
+		int slot;
+		glGetUniformiv(program, it->second, &slot);
+		
+		if (slot < 0 && slot >= textures.size())
+			return false;
+		
+		textures[slot] = texture;
 		return true;
 	}
-	else
-	{
-		//textures.push_back(nullptr);
-		Log::e("Texture", name, "not found");
-		return false;
-	}
+	
+	return false;
 }
 
 
@@ -67,19 +74,20 @@ BaseMaterial::BaseMaterial(const std::string &vertexShaderFilepath, const std::s
 	
 	program = glCreateProgram();
 	
-	std::string vs_src = header + FileReader::readText(vertexShaderFilepath);
-	Shader vertexShader = Shader(GL_VERTEX_SHADER, vs_src.data());
+	//Log::d(vertexShaderFilepath);
+	std::string vs_src = header + Shader::preprocessLayout(FileReader::readText(vertexShaderFilepath), attribs);
+	Shader vertexShader = Shader(GL_VERTEX_SHADER, vs_src);
 	glAttachShader(program, vertexShader.shader);
-	
+	//Log::d("ok");
 	
 	std::string fs_src = header + FileReader::readText(fragmentShaderFilepath);
-	Shader fragmentShader = Shader(GL_FRAGMENT_SHADER, fs_src.data());
+	Shader fragmentShader = Shader(GL_FRAGMENT_SHADER, fs_src);
 	glAttachShader(program, fragmentShader.shader);
 	
 	if (!geometryShaderFilepath.empty())
 	{
 		std::string gs_src = header + FileReader::readText(geometryShaderFilepath);
-		Shader geometryShader = Shader(GL_GEOMETRY_SHADER, gs_src.data());
+		Shader geometryShader = Shader(GL_GEOMETRY_SHADER, gs_src);
 		glAttachShader(program, geometryShader.shader);
 	}
 	
@@ -99,7 +107,7 @@ BaseMaterial::BaseMaterial(const std::string &vertexShaderFilepath, const std::s
 	vertexShader.deleteShader();
 	fragmentShader.deleteShader();
 	
-	loadAttributes();
+	//loadAttributes();
 	loadUniforms();
 }
 
@@ -183,7 +191,7 @@ void BaseMaterial::loadAttributes()
 		
 		if (loc != -1)
 		{
-			attribs[loc] = {loc, size, type, 0, 0};
+			attribs[loc] = {loc, size, type};
 			real_count++;
 		}
 	}
@@ -193,6 +201,8 @@ void BaseMaterial::loadAttributes()
 
 void BaseMaterial::loadUniforms()
 {
+	use();
+	
 	int count;
 	glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
 	
@@ -209,6 +219,12 @@ void BaseMaterial::loadUniforms()
 		
 		GLint location = glGetUniformLocation(program, name);
 		
+		if (type == GL_SAMPLER_2D)
+		{
+			Log::d(name, type, size);
+			setUniform(location, (int) textures.size());
+			textures.push_back(nullptr);
+		}
 		
 		bool def = false;
 		for (int j = 0; j < DefUniform::_ENUM_SIZE; j++)
@@ -233,13 +249,6 @@ BaseMaterial::BaseMaterial(const BaseMaterial::Definition &def) :
 		def.geometryShaderFilepath,
 		def.defines)
 {}
-
-BaseMaterial::BaseMaterial(BaseMaterial *material) :
-	program(material->program)
-{
-	loadAttributes();
-	loadUniforms();
-}
 
 
 

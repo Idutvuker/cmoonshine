@@ -7,8 +7,8 @@ struct VertexAttrib
 	int index;
 	int size;
 	GLenum type;
-	int stride;
-	int offset;
+//	int stride;
+//	int offset;
 
 //		VertexAttrib(int index, int size, GLenum type, int stride, int offset) :
 //		index(index),

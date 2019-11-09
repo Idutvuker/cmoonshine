@@ -369,6 +369,7 @@ in VS_DATA
 
 out GS_DATA
 {
+    vec3 wpos;
     vec3 normal;
 } _out;
 
@@ -443,22 +444,23 @@ void main()
         if (smoothShading)
             _out.normal = normals[i1];
         gl_Position = ModelViewProjMat * (pos + vec4(v1, 0));
+        _out.wpos = pos.xyz + v1;
         EmitVertex();
 
         if (smoothShading)
             _out.normal = normals[i2];
         gl_Position = ModelViewProjMat * (pos + vec4(v2, 0));
+        _out.wpos = pos.xyz + v2;
         EmitVertex();
 
         if (smoothShading)
             _out.normal = normals[i3];
         gl_Position = ModelViewProjMat * (pos + vec4(v3, 0));
+        _out.wpos = pos.xyz + v3;
         EmitVertex();
 
         EndPrimitive();
 
         i += 3;
     }
-
-
 }

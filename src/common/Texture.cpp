@@ -7,8 +7,8 @@
 Texture::Texture(const std::string &filepath)
 {
 	int x, y, n;
-	unsigned char *data = stbi_load(filepath.data(), &x, &y, &n, 3);
-	//Log::d((int)data[0], (int)data[100]);
+	unsigned char *data = stbi_load(filepath.data(), &x, &y, &n, STBI_rgb);
+	Log::d(filepath, n);
 	glGenTextures(1, &texture);
 	
 	glBindTexture(GL_TEXTURE_2D, texture);

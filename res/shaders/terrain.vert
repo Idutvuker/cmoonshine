@@ -1,10 +1,10 @@
-
+#attribute int _bits
 
 uniform mat4 ModelViewProjMat;
 
 const float scale = 1;
 
-layout (location = 0) in int _bits;
+//layout (location = 0) in int _bits;
 
 out VS_DATA
 {

@@ -16,7 +16,7 @@ public:
 	FlyCamera(float fov, int width, int height);
 
 	const double sensitivity = 0.001;
-	const float flySpeed = 5.0f;
+	const float flySpeed = 8.0f;
 	
 	bool mouseLook = true;
 

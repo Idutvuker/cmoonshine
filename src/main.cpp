@@ -115,7 +115,7 @@ void quit()
 
 int main()
 {
-	Engine::_init(600, 400, "moonshine");
+	Engine::_init(900, 900, "moonshine");
 	using namespace Engine;
 	Assets::init();
 	
@@ -139,10 +139,14 @@ int main()
 	terrain->transform = translate(scale(IDENTITY_MATRIX, vec3(0.3f, 0.3f, 0.3f)), vec3(-32, -1, -32));
 	root->addChild(terrain);
 	
-	auto mat = new BaseMaterial(Assets::Materials::defaultM);
+	BaseMaterial::Definition def;
+	def.vertexShaderFilepath = "res/shaders/simple.vert";
+	def.fragmentShaderFilepath = "res/shaders/simple.frag";
+	def.defines = {"TEXTURED"};
+	
+	auto mat = new BaseMaterial(def);
 	auto tx = new Texture("res/textures/default.png");
-	if (!mat->setTexture("tex", tx))
-		Log::e("Texture failed");
+	mat->setTexture("tex", tx);
 	
 	ModelLoader::load("res/models/monkey2.obj", emp1, mat, 1.f);
 	ModelLoader::load("res/models/teapot2.obj", emp2, Assets::Materials::defaultM, 0.5f);

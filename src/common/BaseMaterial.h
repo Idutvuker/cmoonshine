@@ -74,7 +74,6 @@ public:
 	
 	
 	BaseMaterial(const Definition &def);
-	BaseMaterial(BaseMaterial *material);
 	
 	//VertexAttribSetup vertexAttribSetup;
 	std::vector<VertexAttrib> attribs;
@@ -86,7 +85,6 @@ public:
 	
 	
 	bool setTexture(const std::string &name, Texture *texture);
-	
 	
 	template <typename T>
 	bool setShaderUniform(const std::string &name, const T &value)

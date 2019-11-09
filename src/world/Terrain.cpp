@@ -136,7 +136,11 @@ Terrain::Terrain()
 			"ISOLEVEL " + std::to_string(isolevel)};
 	
 	material = new BaseMaterial(def);
+	auto t_rocks = new Texture("res/textures/rocks.jpg");
+	auto t_ground = new Texture("res/textures/ground.jpg");
 	
+	material->setTexture("ground", t_ground);
+	material->setTexture("rocks", t_rocks);
 	
 	for (int i = 0; i < dimX * dimY * dimZ; i++)
 	{
