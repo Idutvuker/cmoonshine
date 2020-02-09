@@ -17,7 +17,7 @@ Window::~Window() {
 Window::Window(int windowWidth, int windowHeight, const char *title) :
 	initialized(true)
 {
-	handle = glfwCreateWindow(windowWidth, windowHeight, title, nullptr, nullptr);
+	handle = glfwCreateWindow(windowWidth, windowHeight, title, glfwGetPrimaryMonitor(), nullptr);
 	
 	if (handle == nullptr)
 	{

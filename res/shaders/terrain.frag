@@ -28,7 +28,7 @@ vec3 triplanar(float scale)
 void main()
 {
 	float diffuse = max(0.0, dot(normalize(_in.normal), (light_dir)));
-	float ambient = 0.1;
+	float ambient = 0.2;
     vec3 color = triplanar(0.15);
 
 	FragColor = vec4((diffuse * 0.8 + ambient) * color, 1.0);

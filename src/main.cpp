@@ -16,7 +16,7 @@ Spatial *emp1;
 FlyCamera *camera;
 Terrain *terrain;
 
-float radius = 3;
+float radius = 4;
 
 void picking(float val)
 {
@@ -115,7 +115,7 @@ void quit()
 
 int main()
 {
-	Engine::_init(900, 900, "moonshine");
+	Engine::_init(1920, 1080, "moonshine");
 	using namespace Engine;
 	Assets::init();
 	
@@ -148,8 +148,9 @@ int main()
 	auto tx = new Texture("res/textures/default.png");
 	mat->setTexture("tex", tx);
 	
-	ModelLoader::load("res/models/monkey2.obj", emp1, mat, 1.f);
-	ModelLoader::load("res/models/teapot2.obj", emp2, Assets::Materials::defaultM, 0.5f);
+	
+	//ModelLoader::load("res/models/monkey2.obj", emp1, mat, 1.f);
+	//ModelLoader::load("res/models/teapot2.obj", emp2, Assets::Materials::defaultM, 0.5f);
 	
 	camera = new FlyCamera(1.1f, window->getWidth(), window->getHeight());
 	camera->name = "Camera";

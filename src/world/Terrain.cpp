@@ -1,6 +1,7 @@
 #include "Terrain.h"
 #include "../system/Assets.h"
 #include "../voxel/MarchingCubes.h"
+#include "../system/Textures.h"
 
 #define MACRO_BUFFER_OFFSET(idx) (static_cast<char*>(0) + (idx))
 
@@ -111,7 +112,7 @@ void Terrain::addToBuffer(const std::vector<uint32> &vec)
 void Terrain::draw(const RenderContext &context)
 {
 	material->prepare(context);
-	
+	//Log::vec();
 	glBindVertexArray(vao);
 	
 	glActiveTexture(GL_TEXTURE0);
@@ -124,6 +125,7 @@ void Terrain::draw(const RenderContext &context)
 
 Terrain::Terrain()
 {
+	using namespace Assets;
 	BaseMaterial::Definition def;
 	def.vertexShaderFilepath = "res/shaders/terrain.vert";
 	def.fragmentShaderFilepath = "res/shaders/terrain.frag";
@@ -136,8 +138,8 @@ Terrain::Terrain()
 			"ISOLEVEL " + std::to_string(isolevel)};
 	
 	material = new BaseMaterial(def);
-	auto t_rocks = new Texture("res/textures/rocks.jpg");
-	auto t_ground = new Texture("res/textures/ground.jpg");
+	auto t_rocks = Textures::load("res/textures/rocks.jpg");
+	auto t_ground = Textures::load("res/textures/ground.jpg");
 	
 	material->setTexture("ground", t_ground);
 	material->setTexture("rocks", t_rocks);
@@ -152,7 +154,13 @@ Terrain::Terrain()
 //		for (int y = 0; y < dimY; y++)
 //			for (int z = 0; z < dimZ; z++)
 //				grid(x, y, z) = (x % 2 == y % 2 == z % 2) ? isolevel + 0.1 : 0.f;
-//
+	
+	for (int x = 0; x < dimX; x++)
+		for (int z = 0; z < dimZ; z++)
+			for (int y = 0; y < 20; y++)
+				grid(x, y, z) = -0.9f;
+			
+
 
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);

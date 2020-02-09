@@ -4,7 +4,7 @@ namespace Engine
 {
 	namespace Configuration
 	{
-		bool useMSAA = false;
+		bool useMSAA = true;
 		bool wireframe = false;
 		bool rawMouseSupported = false;
 		bool backfaceCulling = true;

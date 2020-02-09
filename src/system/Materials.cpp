@@ -20,6 +20,9 @@ namespace Assets
 			def.vertexShaderFilepath = "res/shaders/wireframe.vert";
 			def.fragmentShaderFilepath = "res/shaders/wireframe.frag";
 			wireframe = new BaseMaterial(def);
+			
+			materials.push_back(defaultM);
+			materials.push_back(wireframe);
 		}
 		
 		void destroy()

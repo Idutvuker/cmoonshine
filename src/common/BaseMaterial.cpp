@@ -221,7 +221,6 @@ void BaseMaterial::loadUniforms()
 		
 		if (type == GL_SAMPLER_2D)
 		{
-			Log::d(name, type, size);
 			setUniform(location, (int) textures.size());
 			textures.push_back(nullptr);
 		}

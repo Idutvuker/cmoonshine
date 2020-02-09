@@ -58,7 +58,7 @@ namespace Engine
 		window->setKeyCallback(Input::keyCallback);
 		
 		
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 		
 		glewExperimental = GL_TRUE;
 		if (glewInit() != GLEW_OK)
